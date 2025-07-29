@@ -20,9 +20,10 @@ async def ok():
     return {"message": "ok"}
 
 @app.get("/palabra/")
-async def chequeo(palabra: str):
-    letras = list(palabra)
-    return {*letras}
+async def chequeo(palabra: str):   
+    letras = [letra for letra in palabra]
+    
+    return letras
 
 @app.post("/letra/")
 async def letra(input: LetraInput):
