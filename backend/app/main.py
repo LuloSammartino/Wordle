@@ -14,3 +14,20 @@ app.add_middleware(
 
 class LetraInput(BaseModel):
     letra: str
+
+@app.get("/ok")
+async def ok():
+    return {"message": "ok"}
+
+@app.get("/palabra/")
+async def chequeo(palabra: str):
+    letras = list(palabra)
+    return {*letras}
+
+@app.post("/letra/")
+async def letra(input: LetraInput):
+    letra = input.letra
+    if len(letra) != 1:
+        return {"error": "La letra debe ser un único carácter"}
+    return {"letra": letra}
+
