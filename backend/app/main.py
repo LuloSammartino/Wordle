@@ -40,7 +40,7 @@ def quitar_acentos(palabra):
 palabra_correcta = "puto"
 largo = 4
 intentos = 0
-letras=set()
+letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
 spell = SpellChecker(language=idioma_actual)
 palabras = list(spell.word_frequency.words())
 
@@ -75,7 +75,7 @@ async def correcta_largo(largo_permitido:int | None = None):
 
 @app.get("/set_palabra/random")    
 async def palabra_random():
-    global palabra_correcta
+    global palabra_correcta, largo
     palabra_correcta = rm.choice(palabras)
     largo=len(palabra_correcta)
     return {"palabra_correcta": palabra_correcta,
@@ -95,13 +95,16 @@ async def evaluar_intento(intento:str):
         for i, letra in enumerate(intento):
             if letra == palabra_correcta[i]:
                 resultado.append(2)  # letra correcta en lugar correcto
-                letras.add((letra,2))
-            elif letra in palabra_correcta:
+                letras[letra] = 2
+            elif letra in palabra_correcta and letras[letra] != 2:
                 resultado.append(1)  # letra en palabra pero lugar incorrecto
-                letras.add((letra,1))
+                if letras[letra] == 2:
+                    pass
+                else:
+                    letras[letra] = 1
             else:
                 resultado.append(0)  # letra incorrecta
-                letras.add((letra,0))
+                letras[letra] = 0
         intentos += 1
         return {"resultado": resultado,
                 "letras": letras,
