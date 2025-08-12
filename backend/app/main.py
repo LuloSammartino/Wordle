@@ -35,7 +35,7 @@ async def cambiar_idioma(idioma:Idioma):
 
 def quitar_acentos(palabra):
     return ''.join(c for c in unicodedata.normalize('NFD', palabra)
-                   if unicodedata.category(c) != 'Mn')
+                if unicodedata.category(c) != 'Mn')
 
 palabra_correcta = "puto"
 largo = 4
