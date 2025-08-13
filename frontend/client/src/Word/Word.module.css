@@ -14,7 +14,9 @@
     justify-content: center;
     border-radius: 5%;
     margin: 3%;
-
+    width: 90%;
+    height: 90%;
+    
 }
 
 .letter:hover{
