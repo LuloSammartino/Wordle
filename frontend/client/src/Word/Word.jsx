@@ -1,17 +1,20 @@
 import styles from './Word.module.css';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, use } from 'react';
+import useActiveWordStore from '../Store/activeWord';
 
-function Word() {
+function Word({ indice }) {
+
 
 useEffect(() => {
     inputRefs[actualLetter].current.focus();
+    
 })
 
 const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 const [actualLetter, setActualLetter] = useState(0)
 
+console.log( indice )
 
-///////////////////////////SOLUCIONAR PROBLEMA ONKEYUP///////////////////////////////////////////////////////////
 const handlechange = (e) => {
     console.log(e)
     if(!e.target.value) {
@@ -24,7 +27,7 @@ const handlechange = (e) => {
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
     return (
@@ -36,7 +39,8 @@ const handlechange = (e) => {
                 className={ `${styles.letter} ${actualLetter === i ? styles.active : ""}`}
                 onClick={ () => setActualLetter(i)}
                 onChange={(e) => handlechange(e)}
-                ref={ref}>
+                ref={ref}
+                disabled={useActiveWordStore(state => state.activeWord) == indice ? false : true}>
         </input>)}
         
 

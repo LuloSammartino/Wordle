@@ -5,6 +5,7 @@ import Keyboard from "./Keyboard/Keyboard";
 function App() {
   
   
+  
   return (
 
     <>
@@ -14,11 +15,12 @@ function App() {
 
       <section className={styles.content}>
         <div className={styles.wordsContainer}>
-          <Word></Word>
-          <Word></Word>
-          <Word></Word>
-          <Word></Word>
-          <Word></Word>
+          
+          <Word indice={0}></Word>
+          <Word indice={1}></Word>
+          <Word indice={2}></Word>
+          <Word indice={3}></Word>
+          <Word indice={4}></Word>
         </div>
       </section>
       
