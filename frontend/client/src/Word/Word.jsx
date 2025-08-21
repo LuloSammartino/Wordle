@@ -1,33 +1,41 @@
 import styles from './Word.module.css';
-import { useState, useRef, useEffect, use } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import useActiveWordStore from '../Store/activeWord';
 
-function Word({ indice }) {
+function Word({ index }) {
 
+const activeWord = useActiveWordStore(state => state.activeWord);
+const [actualLetter, setActualLetter] =  useState(0) ;
+const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
+const nextWord = useActiveWordStore(state => state.Next);
 
 useEffect(() => {
     inputRefs[actualLetter].current.focus();
-    
-})
-
-const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
-const [actualLetter, setActualLetter] = useState(0)
-
-console.log( indice )
+}, [actualLetter]);
 
 const handlechange = (e) => {
-    console.log(e)
+    
+
+    if(e.key === "Enter"){
+        nextWord();
+        inputRefs[0].current.focus();
+    }
+
     if(!e.target.value) {
         
-        actualLetter != 0 ? setActualLetter(actualLetter - 1) : ""
+        if(actualLetter != 0){
+            setActualLetter(actualLetter - 1);
+        } 
         
     } else {
-        actualLetter < 4 ? setActualLetter(actualLetter + 1)  : ""
+        if(actualLetter < 4){ 
+            setActualLetter(actualLetter + 1);
+        }
     }
+    
 }
 
-
-
+/////// DEBUGG ONKEYDOWN  /////////////////////////////
 
 
     return (
@@ -36,11 +44,11 @@ const handlechange = (e) => {
     {inputRefs.map((ref, i) =>    
         <input  key={i}
                 maxLength="1" 
-                className={ `${styles.letter} ${actualLetter === i ? styles.active : ""}`}
+                className={ `${styles.letter} ${(actualLetter === i && activeWord === index)? styles.active : ""}`}
                 onClick={ () => setActualLetter(i)}
-                onChange={(e) => handlechange(e)}
+                onKeyDown={(e) => handlechange(e)}
                 ref={ref}
-                disabled={useActiveWordStore(state => state.activeWord) == indice ? false : true}>
+                disabled={activeWord == index ? false : true}>
         </input>)}
         
 

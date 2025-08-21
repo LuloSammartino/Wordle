@@ -16,11 +16,11 @@ function App() {
       <section className={styles.content}>
         <div className={styles.wordsContainer}>
           
-          <Word indice={0}></Word>
-          <Word indice={1}></Word>
-          <Word indice={2}></Word>
-          <Word indice={3}></Word>
-          <Word indice={4}></Word>
+          <Word index={0}></Word>
+          <Word index={1}></Word>
+          <Word index={2}></Word>
+          <Word index={3}></Word>
+          <Word index={4}></Word>
         </div>
       </section>
       
