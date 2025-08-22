@@ -1,6 +1,7 @@
 import styles from './Word.module.css';
 import { useState, useRef, useEffect } from 'react';
 import useActiveWordStore from '../Store/activeWord';
+import axios from 'axios';
 
 function Word({ index }) {
 
@@ -13,12 +14,22 @@ useEffect(() => {
     inputRefs[actualLetter].current.focus();
 }, [actualLetter]);
 
-const handlechange = (e) => {
+const handleWord = async ( word ) => {
     
+    axios.get(`http://localhost:8000/intento/${word}`)
+    .then((response) => {
+        console.log(response.data);
+    })
+}
+
+
+const handlechange = (e) => {
+        
 
     if(e.key === "Enter"){
         nextWord();
         inputRefs[0].current.focus();
+        handleWord(inputRefs.map(ref => ref.current.value).concat().join(''));
     }
 
     if(!e.target.value) {
