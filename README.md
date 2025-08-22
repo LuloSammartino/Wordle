@@ -63,12 +63,8 @@ cp .env.example .env
 
 ### 3. Iniciar el servidor
 
-- **Python (Flask, Django, FastAPI)**:
+- **Python (FastAPI)**:
   ```bash
-  python app.py
-  # o
-  flask run
-  # o
   uvicorn main:app --reload
   ```
 
