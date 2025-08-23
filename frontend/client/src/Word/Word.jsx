@@ -9,17 +9,27 @@ const activeWord = useActiveWordStore(state => state.activeWord);
 const [actualLetter, setActualLetter] =  useState(0) ;
 const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 const nextWord = useActiveWordStore(state => state.Next);
+const [result, setResult] = useState([])
 
 useEffect(() => {
     inputRefs[actualLetter].current.focus();
 }, [actualLetter]);
 
+function handleResultColors (e){
+    if(e == 2)
+        return styles.correct;
+    if(e == 1)
+        return styles.halfCorrect;
+    if(e == 0)
+        return styles.incorrect;
+}
+
+
 const handleWord = async ( word ) => {
     
     axios.get(`http://localhost:8000/intento/${word}`)
-    .then((response) => {
-        console.log(response.data);
-    })
+    .then((res) => {
+        setResult(res.data.resultado)})
 }
 
 
@@ -55,7 +65,10 @@ const handlechange = (e) => {
     {inputRefs.map((ref, i) =>    
         <input  key={i}
                 maxLength="1" 
-                className={ `${styles.letter} ${(actualLetter === i && activeWord === index)? styles.active : ""}`}
+                className={ `${styles.letter} 
+                            ${(actualLetter === i && activeWord === index)? styles.active : ""}
+                            ${result.length ? handleResultColors(result[i]) : ""}`
+                }
                 onClick={ () => setActualLetter(i)}
                 onKeyDown={(e) => handlechange(e)}
                 ref={ref}

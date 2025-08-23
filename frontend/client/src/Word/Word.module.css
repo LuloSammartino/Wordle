@@ -35,3 +35,15 @@ input{
 input:focus{
     outline: none;
 }
+
+.correct{
+    background-color: greenyellow;
+}
+
+.halfCorrect{
+    background-color: yellow;
+}
+
+.incorrect{
+    background-color: gray;
+}
