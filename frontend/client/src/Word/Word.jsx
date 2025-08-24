@@ -27,19 +27,29 @@ function handleResultColors (e){
 
 const handleWord = async ( word ) => {
     
-    axios.get(`http://localhost:8000/intento/${word}`)
-    .then((res) => {
-        setResult(res.data.resultado)})
+        await axios.get(`http://localhost:8000/intento/${word}`)
+        .then((res) => {
+            console.log(res.data)
+            setResult(res.data.resultado)})
+        nextWord();
+    
 }
 
+function validateWord (array){
+    for(let i=0; i < array.length;i++)
+        if(!array[i].current.value)  return false
+    
+    return true;
+}
 
 const handlechange = (e) => {
         
 
     if(e.key === "Enter"){
-        nextWord();
-        inputRefs[0].current.focus();
-        handleWord(inputRefs.map(ref => ref.current.value).concat().join(''));
+        //validar que todos los inputs esten llenos
+        validateWord(inputRefs) ? 
+        handleWord(inputRefs.map(ref => ref.current.value).concat().join('')) :
+        window.alert("Debe llenar todos los campos")
     }
 
     if(!e.target.value) {
@@ -67,7 +77,7 @@ const handlechange = (e) => {
                 maxLength="1" 
                 className={ `${styles.letter} 
                             ${(actualLetter === i && activeWord === index)? styles.active : ""}
-                            ${result.length ? handleResultColors(result[i]) : ""}`
+                            ${result ? handleResultColors(result[i]) : ""}`
                 }
                 onClick={ () => setActualLetter(i)}
                 onKeyDown={(e) => handlechange(e)}
