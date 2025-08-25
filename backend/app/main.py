@@ -37,8 +37,8 @@ def quitar_acentos(palabra):
     return ''.join(c for c in unicodedata.normalize('NFD', palabra)
                 if unicodedata.category(c) != 'Mn')
 
-palabra_correcta = "puto"
-largo = 4
+palabra_correcta = "arbol"
+largo = 5
 intentos = 0
 letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
 spell = SpellChecker(language=idioma_actual)
