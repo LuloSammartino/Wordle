@@ -1,6 +1,6 @@
 import styles from './Word.module.css';
 import { useState, useRef, useEffect } from 'react';
-import useActiveWordStore from '../Store/activeWord';
+import useActiveWordStore from '../../Store/activeWord';
 import axios from 'axios';
 
 function Word({ index }) {

@@ -1,6 +1,6 @@
-import Word from "./Word/Word"
+import Word from "./Components/Word/Word"
 import styles from './App.module.css';
-import Keyboard from "./Keyboard/Keyboard";
+import Keyboard from "./Components/Keyboard/Keyboard";
 
 function App() {
   
