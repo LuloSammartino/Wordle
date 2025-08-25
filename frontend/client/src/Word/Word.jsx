@@ -11,9 +11,14 @@ const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 const nextWord = useActiveWordStore(state => state.Next);
 const [result, setResult] = useState([])
 
-useEffect(() => {
+
+useEffect(() => {  
     inputRefs[actualLetter].current.focus();
 }, [actualLetter]);
+
+useEffect(() =>{
+    inputRefs[actualLetter].current.focus();
+}, [activeWord])
 
 function handleResultColors (e){
     if(e == 2)
@@ -24,14 +29,18 @@ function handleResultColors (e){
         return styles.incorrect;
 }
 
-
 const handleWord = async ( word ) => {
     
         await axios.get(`http://localhost:8000/intento/${word}`)
         .then((res) => {
-            console.log(res.data)
-            setResult(res.data.resultado)})
-        nextWord();
+            if(res.data.mensaje){
+                window.alert("no existe palabra")
+            } else{
+                setResult(res.data.resultado);
+                nextWord()
+            }
+            })
+        
     
 }
 
@@ -42,31 +51,53 @@ function validateWord (array){
     return true;
 }
 
-const handlechange = (e) => {
-        
+const handleInputChange = (e) => {
 
-    if(e.key === "Enter"){
-        //validar que todos los inputs esten llenos
-        validateWord(inputRefs) ? 
-        handleWord(inputRefs.map(ref => ref.current.value).concat().join('')) :
-        window.alert("Debe llenar todos los campos")
-    }
+    const value = e.target.value;
 
-    if(!e.target.value) {
-        
-        if(actualLetter != 0){
-            setActualLetter(actualLetter - 1);
-        } 
-        
-    } else {
-        if(actualLetter < 4){ 
-            setActualLetter(actualLetter + 1);
-        }
+    if (!value) {
+        actualLetter != 0 ? setActualLetter(actualLetter - 1) : "" ;    
+    } else{
+        if(value.match(/^[a-zA-Z]?$/)){
+            actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""
+        } else e.target.value = "";   
     }
     
-}
+};
 
-/////// DEBUGG ONKEYDOWN  /////////////////////////////
+
+
+const handleKeyDown = (e) => {
+
+    if(e.key.match(/^[a-zA-Z]?$/) &&  e.target.value && actualLetter < 4){
+            setActualLetter(actualLetter + 1)
+    }
+    
+    switch (e.key){
+        case "Enter":
+            if(validateWord(inputRefs)) {
+            handleWord(inputRefs.map(ref => ref.current.value).join(''));
+        } else {
+            window.alert("Debe llenar todos los campos");
+        }
+        break;
+        case "Backspace": ////DEBUG//
+            if (!inputRefs[actualLetter].current.value && actualLetter > 0) {
+            setActualLetter(actualLetter - 1);
+        }
+        break;
+        case " ":
+            actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""
+        break;
+        case "ArrowLeft":
+            actualLetter != 0 ? setActualLetter(actualLetter - 1) : ""
+        break;
+        case "ArrowRight":
+            actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""           
+    }
+    
+};
+
 
 
     return (
@@ -80,14 +111,17 @@ const handlechange = (e) => {
                             ${result ? handleResultColors(result[i]) : ""}`
                 }
                 onClick={ () => setActualLetter(i)}
-                onKeyDown={(e) => handlechange(e)}
+                onChange={ (e) => handleInputChange(e) }
+                onKeyDown={ (e) => handleKeyDown(e) }
                 ref={ref}
-                disabled={activeWord == index ? false : true}>
-        </input>)}
+                disabled={activeWord == index ? false : true}
+        />
+    )}
         
 
 
     </main>
 )
 }
-export default Word;
+
+export default Word
