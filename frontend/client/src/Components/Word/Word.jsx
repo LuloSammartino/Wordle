@@ -1,6 +1,7 @@
 import styles from './Word.module.css';
 import { useState, useRef, useEffect, createRef } from 'react';
 import useActiveWordStore from '../../Store/activeWord';
+import useCorrectWordStore from '../../Store/correctWord';
 import axios from 'axios';
 
 function Word({index})  {
@@ -8,6 +9,7 @@ function Word({index})  {
 const activeWord = useActiveWordStore(state => state.activeWord);
 const [actualLetter, setActualLetter] =  useState(0) ;
 const nextWord = useActiveWordStore(state => state.Next);
+const correct = useCorrectWordStore(state => state.correctWord);
 const [result, setResult] = useState([])
 const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 
@@ -36,6 +38,7 @@ const handleWord = async ( word ) => {
         .then((res) => {
                 setResult(res.data.resultado);
                 nextWord()
+                res.data.intentos == 5 ? window.alert(`Perdiste, la palabra era ${correct}`) : "" ;
         })
         .catch((err) => {window.alert(err.response.data.detail)});
         
@@ -63,7 +66,7 @@ const handleInputChange = (e) => {
     
 };
 
-
+/////////////////////DEBUGG ONCHANGE CON ARROW LEFT///////////////////////////////
 
 const handleKeyDown = (e) => {
 

@@ -3,15 +3,17 @@ import styles from './App.module.css';
 import Keyboard from "./Components/Keyboard/Keyboard";
 import { use, useEffect , useState } from "react";
 import axios from "axios";
+import useCorrectWordStore from "./Store/correctWord";
 
 function App() {
   
 const [actualSize, setActualSize] =  useState(5) ;
+const setCorrecta = useCorrectWordStore(state => state.SetNewCorrect);
 
 useEffect(() => {
   axios.get(`http://localhost:8000/reset`)
-  .then((res) => {console.log(res.data)})
-})
+  .then(res => { setCorrecta(res.data.palabra_correcta); console.log(res.data.palabra_correcta);})
+},[])
 
 
 const handleSize = (e) => {
