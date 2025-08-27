@@ -9,7 +9,8 @@ function App() {
 const [actualSize, setActualSize] =  useState(5) ;
 
 useEffect(() => {
-  axios.get(`http://localhost:8000/reset/`)
+  axios.get(`http://localhost:8000/reset`)
+  .then((res) => {console.log(res.data)})
 })
 
 

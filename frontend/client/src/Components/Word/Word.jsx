@@ -34,13 +34,10 @@ const handleWord = async ( word ) => {
     
         await axios.get(`http://localhost:8000/intento/${word}`)
         .then((res) => {
-            if(res.data.mensaje){
-                window.alert(res.data.mensaje)
-            } else{
                 setResult(res.data.resultado);
                 nextWord()
-            }
-            })
+        })
+        .catch((err) => {window.alert(err.response.data.detail)});
         
     
 }
