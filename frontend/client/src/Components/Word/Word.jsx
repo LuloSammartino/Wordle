@@ -1,16 +1,15 @@
 import styles from './Word.module.css';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, createRef } from 'react';
 import useActiveWordStore from '../../Store/activeWord';
 import axios from 'axios';
 
-function Word({ index }) {
+function Word({index})  {
 
 const activeWord = useActiveWordStore(state => state.activeWord);
 const [actualLetter, setActualLetter] =  useState(0) ;
-const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 const nextWord = useActiveWordStore(state => state.Next);
 const [result, setResult] = useState([])
-
+const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 
 useEffect(() => {  
     inputRefs[actualLetter].current.focus();
@@ -19,6 +18,8 @@ useEffect(() => {
 useEffect(() =>{
     inputRefs[actualLetter].current.focus();
 }, [activeWord])
+
+
 
 function handleResultColors (e){
     if(e == 2)
@@ -34,7 +35,7 @@ const handleWord = async ( word ) => {
         await axios.get(`http://localhost:8000/intento/${word}`)
         .then((res) => {
             if(res.data.mensaje){
-                window.alert("no existe palabra")
+                window.alert(res.data.mensaje)
             } else{
                 setResult(res.data.resultado);
                 nextWord()
@@ -103,7 +104,8 @@ const handleKeyDown = (e) => {
     return (
     <main className={styles.word}>
 
-    {inputRefs.map((ref, i) =>    
+    {inputRefs.map((ref,i) => (
+            
         <input  key={i}
                 maxLength="1" 
                 className={ `${styles.letter} 
@@ -115,7 +117,7 @@ const handleKeyDown = (e) => {
                 onKeyDown={ (e) => handleKeyDown(e) }
                 ref={ref}
                 disabled={activeWord == index ? false : true}
-        />
+        />)
     )}
         
 
