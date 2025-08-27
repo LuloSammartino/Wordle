@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from spellchecker import SpellChecker
@@ -29,6 +29,7 @@ class Idioma(BaseModel):
 idioma_actual = "es"
 @app.post("/idioma/")
 async def cambiar_idioma(idioma:Idioma):
+    """ Cambia el idioma del diccionario """
     global idioma_actual
     idioma_actual = idioma.idioma
     return {"mensaje": f"Idioma cambiado a {idioma.idioma}"}
@@ -38,59 +39,71 @@ def quitar_acentos(palabra):
                 if unicodedata.category(c) != 'Mn')
 
 palabra_correcta = "arbol"
-largo = 5
+largo_actual = 5
 intentos = 0
-letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
+letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"n":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
 spell = SpellChecker(language=idioma_actual)
-palabras = list(spell.word_frequency.words())
 
+palabras = list(spell.word_frequency.words())
 palabras = [quitar_acentos(p) for p in palabras]
+
+def new_game():
+    """Inicia un nuevo juego"""
+    global palabra_correcta, largo_actual, intentos, letras
+    palabra_correcta = rm.choice([p for p in palabras if len(p) == 5 and p.isalpha()])
+    largo_actual = 5
+    intentos = 0
+    letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"n":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
+
+@app.on_event("startup")
+def startup_event():
+    """ Evento que se ejecuta al iniciar la aplicación """
+    new_game()
+
+@app.get("/reset")
+def reset_game():
+    """Resetea la partida"""
+    new_game()
+    return {"palabra_correcta": palabra_correcta,
+            "largo_actual": largo_actual,
+            "message": "Nuevo juego iniciado"}
 
 @app.get("/correcta")
 async def mostrar_palabra_correcta():
+    """ Muestra la palabra correcta actual y su largo """
     return {"palabra_correcta": palabra_correcta,
-            "largo": largo}
+            "largo_actual": largo_actual}
 
 @app.post("/set_palabra")
 async def correcta(correcta:Palabra):
-    global palabra_correcta, largo
+    """ Establece la palabra correcta """
+    global palabra_correcta, largo_actual
     palabra_correcta = correcta.palabra.lower()
-    largo = len(palabra_correcta)
+    largo_actual = len(palabra_correcta)
     palabras.append(palabra_correcta)
     return {"mensaje": f"Palabra correcta actualizada a '{palabra_correcta}'"}
 
-@app.get("/set_largo")
-async def correcta_largo(largo_permitido:int | None = None):
-    global largo, palabras
-    largo = largo_permitido
-    if largo_permitido:
-        palabras = [p for p in palabras if len(p) == largo and p.isalpha()]
-        if len(palabras)>=1:
-            return {"mensaje": f"Largo actualizado a {largo_permitido}"}
-        else:
-            return{"mensaje": f"No existen palabras en pyspellchecker de largo {largo_permitido}"}
-    else:
-        palabras = list(spell.word_frequency.words())
-        return{"mensaje": "largo libre"}
-
 @app.get("/set_palabra/random")    
-async def palabra_random():
-    global palabra_correcta, largo
-    palabra_correcta = rm.choice(palabras)
-    largo=len(palabra_correcta)
+async def palabra_random(largo:int | None = largo_actual):
+    """ Establece una palabra correcta aleatoria de un largo dado (o el actual si no se da) """
+    global palabra_correcta, largo_actual, palabras
+    if largo:
+        posibles_palabras = [p for p in palabras if len(p) == largo and p.isalpha()]
+        if len(posibles_palabras)<1:
+            return{"mensaje": f"No existen palabras en pyspellchecker de largo {largo}"}    # esto por ahora no pasa (elige entre 1 y 16)
+    palabra_correcta = rm.choice(posibles_palabras)
+    largo_actual = len(palabra_correcta)
     return {"palabra_correcta": palabra_correcta,
-            "largo": largo}
+            "largo_actual": largo_actual}
 
 @app.get("/intento/{intento}")
 async def evaluar_intento(intento:str):
+    """ Evalua un intento y devuelve el resultado """
     global intentos, letras
     intento = intento.lower()
     resultado = []
-    if len(intento)!=largo:
-        return {"largo": largo, 
-                "mensaje": f"La palabra es de largo {len(intento)}, debe ser de largo {largo}"}
     if intento not in palabras:
-            return{"mensaje": f"Palabra correcta debe estar en pyspellchecker"}
+        raise HTTPException(status_code=404, detail = "La palabra debe estar en spellchecker")
     else:
         for i, letra in enumerate(intento):
             if letra == palabra_correcta[i]:
@@ -110,9 +123,19 @@ async def evaluar_intento(intento:str):
                 "letras": letras,
                 "intentos": intentos}
 
-@app.get("/palabras")
-async def validas():
-    return {"palabras validas": palabras}
+@app.get("/palabras/")
+async def validas(validas: bool = True, largo: int | None = None):
+    """ Devuelve las palabras válidas (o todas) de un largo dado (o el actual si no se da) """
+    if not largo:
+        if validas:
+            palabras_validas = [p for p in palabras if len(p) == largo_actual and p.isalpha()]
+            return {"palabras_validas": palabras_validas}
+        else: 
+            return {"palabras": palabras}
+    else:
+        palabras_largo = [p for p in palabras if len(p) == largo and p.isalpha()]
+        return {"palabras_largo": palabras_largo}
+
 
 @app.get("/palabra/{palabra}")
 async def chequeo(palabra:str):   
