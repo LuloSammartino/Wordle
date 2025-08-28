@@ -12,7 +12,7 @@ const setCorrecta = useCorrectWordStore(state => state.SetNewCorrect);
 
 useEffect(() => {
   axios.get(`http://localhost:8000/reset`)
-  .then(res => { setCorrecta(res.data.palabra_correcta); console.log(res.data.palabra_correcta);})
+  .then(res => { setCorrecta(res.data.palabra_correcta)})
 },[])
 
 

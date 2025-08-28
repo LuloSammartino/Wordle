@@ -38,7 +38,9 @@ const handleWord = async ( word ) => {
         .then((res) => {
                 setResult(res.data.resultado);
                 nextWord()
-                res.data.intentos == 5 ? window.alert(`Perdiste, la palabra era ${correct}`) : "" ;
+                if(res.data.intentos == 5){
+                    res.data.resultado.includes(1) || res.data.resultado.includes(0) ? window.alert(`Perdiste, la palabra era ${correct}`) : "" ;
+                } 
         })
         .catch((err) => {window.alert(err.response.data.detail)});
         
