@@ -1,4 +1,4 @@
-# Wordle
+# 🕹️ Wordle
 
 Este repositorio contiene una aplicación de Wordle organizada en dos partes principales:
 
@@ -7,7 +7,7 @@ Este repositorio contiene una aplicación de Wordle organizada en dos partes pri
 
 ---
 
-## Requisitos previos
+## 🎯 Requisitos previos
 
 Asegúrate de tener instaladas las siguientes herramientas:
 
@@ -17,7 +17,7 @@ Asegúrate de tener instaladas las siguientes herramientas:
 
 ---
 
-## Clonación del repositorio
+## ⛓️‍💥 Clonación del repositorio
 
 ```bash
 git clone https://github.com/LuloSammartino/Wordle.git
@@ -26,7 +26,7 @@ cd Wordle
 
 ---
 
-##  Backend
+## 💻 Backend
 
 Entra a la carpeta del backend:
 
@@ -54,7 +54,7 @@ Verás algo como: `Backend escuchando en http://localhost:8000` (o el puerto que
 
 ---
 
-##  Frontend
+## 🖥️ Frontend
 
 Abre una nueva terminal, vuelve al directorio principal y luego entra al frontend:
 
@@ -79,11 +79,11 @@ npm run dev
 yarn run dev
 ```
 
-Esto normalmente iniciará un servidor en `http://localhost:5173`.
+✅ Esto normalmente iniciará un servidor en `http://localhost:5173`.
 
 ---
 
-##  Flujo completo
+##  🧬 Flujo completo
 
 1. En una terminal: corre el **backend**.
 2. En otra terminal: corre el **frontend**.
@@ -92,26 +92,6 @@ Esto normalmente iniciará un servidor en `http://localhost:5173`.
 
 ---
 
-##  Estructura de carpetas 
-
-```
-Wordle/
-│
-├── backend/
-│   ├── app.py
-│   ├── requirements.txt
-│   └── .env.example
-│
-├── frontend/
-│   ├── package.json
-│   ├── src/
-│   │   └── ...
-│   └── .env.example
-│
-└── README.md  ← Este archivo
-```
-
----
 
 
 
