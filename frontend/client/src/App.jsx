@@ -5,6 +5,8 @@ import { use, useEffect , useState } from "react";
 import axios from "axios";
 import useCorrectWordStore from "./Store/correctWord";
 
+
+
 function App() {
   
 const [actualSize, setActualSize] =  useState(5) ;
@@ -24,8 +26,12 @@ const handleSize = (e) => {
 
     <>
       <header className={styles.headerApp}>
-        <h1>WORLDE PARA PUTOS</h1>
-        <select onChange={(e) => handleSize(e)} >
+
+        
+      
+        
+        <h1>EL WORDLE MAS DIFICIL DEL MUNDO</h1>
+        {/* <select onChange={(e) => handleSize(e)} > 
           <option value="1" >1</option>
           <option value="2" >2</option>
           <option value="3" >3</option>
@@ -47,7 +53,7 @@ const handleSize = (e) => {
           <option value="19">19</option>
           <option value="20">20</option>
           <option value="21">21</option>
-        </select>
+        </select> */}
       </header>
 
       <section className={styles.content}>

@@ -94,16 +94,18 @@ const handleKeyDown = (e) => {
         break;
         case "ArrowLeft":
             actualLetter != 0 ? setActualLetter(actualLetter - 1) : ""
+            e.target.selectionEnd = 1;       
+            e.target.focus()  
         break;
         case "ArrowRight":
-            actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""           
+            actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""  
     }
     
 };
 
 
 
-    return (
+    return ( 
     <main className={styles.word}>
 
     {inputRefs.map((ref,i) => (
@@ -114,7 +116,7 @@ const handleKeyDown = (e) => {
                             ${(actualLetter === i && activeWord === index)? styles.active : ""}
                             ${result ? handleResultColors(result[i]) : ""}`
                 }
-                onClick={ () => setActualLetter(i)}
+                onClick={ () => setActualLetter(i) }
                 onChange={ (e) => handleInputChange(e) }
                 onKeyDown={ (e) => handleKeyDown(e) }
                 ref={ref}

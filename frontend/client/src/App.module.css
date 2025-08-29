@@ -9,6 +9,24 @@
     background-color: lightblue;
 }
 
+.videoBackground{
+    position: absolute;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+}
+
+h1{
+    background-image: url("./assets/fireplace-love.gif");
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    padding-inline:5px ;
+    margin-bottom: 50px;
+    text-shadow: 2px 2px 4px #fff;
+}
+
 .content{
     height: 50vh;
     width: 100%;
@@ -31,6 +49,5 @@
     height: 30vh;
     width: 100%;
     background-color: lightblue;
-    
 }
 
