@@ -13,7 +13,7 @@ Asegúrate de tener instaladas las siguientes herramientas:
 
 - [Node.js](https://nodejs.org) (v14 o superior) — para el frontend.
 - [npm](https://www.npmjs.com) o [yarn] — gestor de paquetes para Node.js.
-- [Python](https://www.python.org) (v3.7 o superior) o el entorno correspondiente para el backend.
+- [Python](https://www.python.org) (v3.7 o superior).
 
 ---
 
