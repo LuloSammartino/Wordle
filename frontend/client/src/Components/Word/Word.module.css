@@ -15,7 +15,7 @@
     margin: 3%;
     width: 90%;
     height: 90%;
-    
+    caret-color: transparent;
     text-transform: uppercase;
 }
 

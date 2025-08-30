@@ -18,3 +18,15 @@
 .key{
     width: 100%;
 }
+
+.right{
+    background-color: greenyellow;
+}
+
+.wrong{
+    background-color: rgba(38, 37, 37, 0.612);
+}
+
+.almostRight{
+    background-color: gold;
+}

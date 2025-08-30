@@ -2,20 +2,22 @@ import styles from './Word.module.css';
 import { useState, useRef, useEffect, createRef } from 'react';
 import useActiveWordStore from '../../Store/activeWord';
 import useCorrectWordStore from '../../Store/correctWord';
+import useLetters from '../../Store/lettersStatus';
 import axios from 'axios';
 
 function Word({index})  {
 
-const activeWord = useActiveWordStore(state => state.activeWord);
-const [actualLetter, setActualLetter] =  useState(0) ;
-const nextWord = useActiveWordStore(state => state.Next);
-const correct = useCorrectWordStore(state => state.correctWord);
+const activeWord = useActiveWordStore(state => state.activeWord)
+const nextWord = useActiveWordStore(state => state.Next)
+const correct = useCorrectWordStore(state => state.correctWord)
+const setLetters = useLetters(state => state.SetLetters)
+const [actualLetter, setActualLetter] =  useState(0) 
 const [result, setResult] = useState([])
-const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
+const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()]
 
 useEffect(() => {  
     inputRefs[actualLetter].current.focus();
-}, [actualLetter]);
+}, [actualLetter])
 
 useEffect(() =>{
     inputRefs[actualLetter].current.focus();
@@ -36,8 +38,9 @@ const handleWord = async ( word ) => {
     
         await axios.get(`http://localhost:8000/intento/${word}`)
         .then((res) => {
-                setResult(res.data.resultado);
+                setResult(res.data.resultado)
                 nextWord()
+                setLetters(res.data.letras)
                 if(res.data.intentos == 5){
                     res.data.resultado.includes(1) || res.data.resultado.includes(0) ? window.alert(`Perdiste, la palabra era ${correct}`) : "" ;
                 } 
