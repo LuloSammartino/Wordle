@@ -68,7 +68,6 @@ const handleInputChange = (e) => {
     
 };
 
-/////////////////////DEBUGG ONCHANGE CON ARROW LEFT///////////////////////////////
 
 const handleKeyDown = (e) => {
 
@@ -93,9 +92,8 @@ const handleKeyDown = (e) => {
             actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""
         break;
         case "ArrowLeft":
+            e.preventDefault();
             actualLetter != 0 ? setActualLetter(actualLetter - 1) : ""
-            e.target.selectionEnd = 1;       
-            e.target.focus()  
         break;
         case "ArrowRight":
             actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""  

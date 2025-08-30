@@ -1,4 +1,20 @@
 .keyboard{
     background-color: lightgrey;
-    
+    width: 60vh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.keyboardRow{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.key{
+    width: 100%;
 }
