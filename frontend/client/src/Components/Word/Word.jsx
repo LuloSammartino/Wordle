@@ -4,6 +4,8 @@ import useActiveWordStore from '../../Store/activeWord';
 import useCorrectWordStore from '../../Store/correctWord';
 import useLetters from '../../Store/lettersStatus';
 import axios from 'axios';
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 function Word({index})  {
 
@@ -42,10 +44,11 @@ const handleWord = async ( word ) => {
                 nextWord()
                 setLetters(res.data.letras)
                 if(res.data.intentos == 5){
-                    res.data.resultado.includes(1) || res.data.resultado.includes(0) ? window.alert(`Perdiste, la palabra era ${correct}`) : "" ;
+                    res.data.resultado.includes(1) || res.data.resultado.includes(0) ?
+                    window.alert(`Perdiste, la palabra era ${correct}`) : "" ;
                 } 
         })
-        .catch((err) => {window.alert(err.response.data.detail)});
+        .catch((err) => {return <tippy></tippy>});
         
     
 }

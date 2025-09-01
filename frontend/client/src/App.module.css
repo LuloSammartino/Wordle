@@ -6,7 +6,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: lightblue;
+    background-color: #2d2b2b;
 }
 
 .videoBackground{
@@ -48,6 +48,6 @@ h1{
     align-items: center;
     height: 30vh;
     width: 100%;
-    background-color: lightblue;
+    background-color: #330000;
 }
 
