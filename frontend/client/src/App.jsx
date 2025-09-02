@@ -4,13 +4,14 @@ import Keyboard from "./Components/Keyboard/Keyboard";
 import { use, useEffect , useState } from "react";
 import axios from "axios";
 import useCorrectWordStore from "./Store/correctWord";
-
-
+import PopUp from "./Components/PopUp/PopUp";
+import usePopUpStatus from "./Store/popUpStatus";
 
 function App() {
   
 const [actualSize, setActualSize] =  useState(5) ;
 const setCorrecta = useCorrectWordStore(state => state.SetNewCorrect);
+const popUpStatus = usePopUpStatus(state => state.popUpStatus)
 
 useEffect(() => {
   axios.get(`http://localhost:8000/reset`)
@@ -58,7 +59,6 @@ const handleSize = (e) => {
 
       <section className={styles.content}>
         <div className={styles.wordsContainer}>
-          
           <Word index={0} size={actualSize}></Word>
           <Word index={1} size={actualSize}></Word>
           <Word index={2} size={actualSize}></Word>
@@ -67,7 +67,8 @@ const handleSize = (e) => {
         </div>
       </section>
       
-
+      {popUpStatus ? <PopUp></PopUp> : "" }
+      
       <footer className={styles.footerApp}>
         <Keyboard></Keyboard>
       </footer>

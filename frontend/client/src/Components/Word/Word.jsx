@@ -1,21 +1,22 @@
 import styles from './Word.module.css';
 import { useState, useRef, useEffect, createRef } from 'react';
 import useActiveWordStore from '../../Store/activeWord';
-import useCorrectWordStore from '../../Store/correctWord';
 import useLetters from '../../Store/lettersStatus';
+import usePopUpStatus from '../../Store/popUpStatus';
 import axios from 'axios';
-import tippy from 'tippy.js';
-import 'tippy.js/dist/tippy.css';
+import {animate} from 'animejs';
 
 function Word({index})  {
 
 const activeWord = useActiveWordStore(state => state.activeWord)
 const nextWord = useActiveWordStore(state => state.Next)
-const correct = useCorrectWordStore(state => state.correctWord)
 const setLetters = useLetters(state => state.SetLetters)
 const [actualLetter, setActualLetter] =  useState(0) 
 const [result, setResult] = useState([])
 const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef()]
+const setPopUpStatus = usePopUpStatus(state => state.setPopUpStauts)
+const setMessage = usePopUpStatus(state => state.setMessage)
+const setTryes = usePopUpStatus(state => state.setTryes)
 
 useEffect(() => {  
     inputRefs[actualLetter].current.focus();
@@ -25,7 +26,11 @@ useEffect(() =>{
     inputRefs[actualLetter].current.focus();
 }, [activeWord])
 
-
+const handlePopUp = (message, tryes) => {
+    setPopUpStatus(true)
+    setMessage(message)
+    setTryes(tryes)
+}
 
 function handleResultColors (e){
     if(e == 2)
@@ -45,10 +50,10 @@ const handleWord = async ( word ) => {
                 setLetters(res.data.letras)
                 if(res.data.intentos == 5){
                     res.data.resultado.includes(1) || res.data.resultado.includes(0) ?
-                    window.alert(`Perdiste, la palabra era ${correct}`) : "" ;
+                    handlePopUp("PERDISTE", 7): "" ;
                 } 
         })
-        .catch((err) => {return <tippy></tippy>});
+        .catch((err) => {animate(inputRefs.map(ref => ref.current), {translateX: [0, 10, -10, 10, -10, 0], duration: 500})});
         
     
 }
