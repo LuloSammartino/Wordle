@@ -39,7 +39,7 @@ cd backend
 
   ```bash
   python3 -m venv venv
-  source venv/bin/activate      # En Windows: `venv\Scripts\activate`
+  source .venv/Scripts/activate    
   pip install -r requirements.txt
   ```
 
@@ -47,10 +47,10 @@ cd backend
 
 - **Python (FastAPI)**:
   ```bash
-  uvicorn main:app --reload
+  uvicorn app.main:app --reload
   ```
 
-Verás algo como: `Backend escuchando en http://localhost:8000` (o el puerto que corresponda).
+Verás algo como: `Backend escuchando en http://localhost:8000`.
 
 ---
 
