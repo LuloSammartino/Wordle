@@ -50,8 +50,11 @@ const handleWord = async ( word ) => {
                 setLetters(res.data.letras)
                 if(res.data.intentos == 5){
                     res.data.resultado.includes(1) || res.data.resultado.includes(0) ?
-                    handlePopUp("PERDISTE", 7): "" ;
-                } 
+                    handlePopUp("PERDISTE", res.data.intentos): "" ;
+                }
+                if(res.data.resultado.every(e => e == 2)){
+                    handlePopUp("¡GANASTE!", res.data.intentos) ;
+                }
         })
         .catch((err) => {animate(inputRefs.map(ref => ref.current), {translateX: [0, 10, -10, 10, -10, 0], duration: 500})});
         
