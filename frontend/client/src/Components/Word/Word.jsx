@@ -91,13 +91,11 @@ const handleKeyDown = (e) => {
     
     switch (e.key){
         case "Enter":
-            if(validateWord(inputRefs)) {
-            handleWord(inputRefs.map(ref => ref.current.value).join(''));
-        } else {
-            window.alert("Debe llenar todos los campos");
-        }
+            validateWord(inputRefs) ?
+            handleWord(inputRefs.map(ref => ref.current.value).join('')) :
+            animate(inputRefs.map(ref => ref.current), {translateX: [0, 10, -10, 10, -10, 0], duration: 500});
         break;
-        case "Backspace": ////DEBUG//
+        case "Backspace": 
             if (!inputRefs[actualLetter].current.value && actualLetter > 0) {
             setActualLetter(actualLetter - 1);
         }
