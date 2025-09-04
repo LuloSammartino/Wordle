@@ -1,7 +1,7 @@
 import Word from "./Components/Word/Word"
 import styles from './App.module.css';
 import Keyboard from "./Components/Keyboard/Keyboard";
-import { use, useEffect , useState } from "react";
+import { useEffect , useState } from "react";
 import axios from "axios";
 import useCorrectWordStore from "./Store/correctWord";
 import PopUp from "./Components/PopUp/PopUp";
