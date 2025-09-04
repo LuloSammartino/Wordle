@@ -104,20 +104,29 @@ async def evaluar_intento(intento:str):
     resultado = []
     if intento not in palabras:
         raise HTTPException(status_code=404, detail = "La palabra debe estar en spellchecker")
-    else:
+    else: 
+        borrador = enumerate(intento)
         for i, letra in enumerate(intento):
             if letra == palabra_correcta[i]:
                 resultado.append(2)  # letra correcta en lugar correcto
                 letras[letra] = 2
-            elif letra in palabra_correcta and letras[letra] != 2:
-                resultado.append(1)  # letra en palabra pero lugar incorrecto
-                if letras[letra] == 2:
-                    pass
-                else:
-                    letras[letra] = 1
+                borrador.pop([i])   
             else:
-                resultado.append(0)  # letra incorrecta
-                letras[letra] = 0
+                resultado.append(0)
+        
+        for i, letra in enumerate(intento):
+            if resultado[i] == 2:
+                continue
+            elif resultado[i] == 0:
+                if letra in borrador:
+                    resultado[i] == 1   # letra en palabra pero lugar incorrecto
+                    if letras[letra] == 2:
+                        pass
+                    else:
+                        letras[letra] = 1
+                else:
+                    continue  # letra no esta en la palabra
+        
         intentos += 1
         return {"resultado": resultado,
                 "letras": letras,
