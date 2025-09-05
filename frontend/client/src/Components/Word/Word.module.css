@@ -1,5 +1,4 @@
 .word{
-    
     width: 100%;
     height: 20%;
     display: grid;
@@ -18,6 +17,23 @@
     caret-color: transparent;
     text-transform: uppercase;
     box-shadow: #000 1px 1px 5px;
+    
+}
+
+.letter:not(:placeholder-shown) {
+    animation: popIn 0.2s;
+}
+
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .letter:hover{
@@ -32,6 +48,7 @@ input{
     border: none;
     width: 100%;
     height: 100%;
+    
 }
 
 input:focus{

@@ -121,7 +121,8 @@ const handleKeyDown = (e) => {
     {inputRefs.map((ref,i) => (
             
         <input  key={i}
-                maxLength="1" 
+                maxLength="1"
+                placeholder=" " 
                 className={ `${styles.letter} 
                             ${(actualLetter === i && activeWord === index)? styles.active : ""}
                             ${result ? handleResultColors(result[i]) : ""}`
