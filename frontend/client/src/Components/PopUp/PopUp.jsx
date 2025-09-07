@@ -11,7 +11,9 @@ const PopUp = () => {
     return (
         <div className={styles.popupContainer}>
             <h2 className={styles.message}>{message}</h2>
-            <h3>La palabra era: {correctWord.toUpperCase()}</h3>
+            <h3>La palabra era:   {" "}
+                <p>{correctWord.toUpperCase()}</p>
+            </h3>
             <h5>intentos: {tryes}</h5>
             <h5>Tiempo: 1:36</h5>
             <h5>Score: 96</h5>
