@@ -27,7 +27,8 @@ useEffect(() =>{
 }, [activeWord])
 
 const handlePopUp = (message, tryes) => {
-    setPopUpStatus(true)
+    setTimeout(() => {setPopUpStatus(true)}, 500);
+    
     setMessage(message)
     setTryes(tryes)
 }

@@ -27,6 +27,25 @@
     font-weight: 400;
 }
 
+.cross{
+    display: inline;
+    background: transparent;
+    color: red;
+    align-self: end;
+    height: 10%;
+    font-weight: 600;
+    font-size: 200%;
+    cursor: pointer;
+    font-style: normal;
+    border: none;
+    font-family: 'Courier New', Courier, monospace;
+    padding-right: 5px;
+    padding-top: 5px;
+}   
+
+.cross:hover{
+    color: darkred;
+}
 
 h3 {
     font-size: 200%;
@@ -45,24 +64,26 @@ h3 p{
 
 h5{
     font-size: 1.5rem;
-    height: 13%;
+    height: 10%;
     font-weight: 400;
     text-align: center;
 }
 
 .buttonContainer{
-    width: 100%;
-    height: 30%;
+    width: 90%;
+    height: 20%;
     display: flex;
     justify-content: center;  
     align-items: center;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .buttonContainer button{
-    width: 80%;
-    height: 80%;
+    width: 100%;
+    height: 100%;
     font-size: 300%;
-    border-radius: 12px;
+    border-radius:  12px;
     cursor: pointer;
     background-color: #70af4c;
     color: white;
