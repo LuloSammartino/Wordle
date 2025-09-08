@@ -44,7 +44,7 @@ function handleResultColors (e){
 
 const handleWord = async ( word ) => {
     
-        await axios.get(`http://localhost:8000/intento/${word}`)
+        await axios.get(`https://wordle-fbkx.onrender.com/${word}`)
         .then((res) => {
                 setResult(res.data.resultado)
                 nextWord()

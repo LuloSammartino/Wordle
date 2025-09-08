@@ -27,7 +27,7 @@ useEffect(() => {
 }, [second]);
 
 useEffect(() => {
-  axios.get(`http://localhost:8000/reset`)
+  axios.get(`https://wordle-fbkx.onrender.com/reset`)
   .then(res => { setCorrecta(res.data.palabra_correcta)})
 },[])
 
