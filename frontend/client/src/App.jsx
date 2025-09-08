@@ -12,6 +12,19 @@ function App() {
 const [actualSize, setActualSize] =  useState(5) ;
 const setCorrecta = useCorrectWordStore(state => state.SetNewCorrect);
 const popUpStatus = usePopUpStatus(state => state.popUpStatus)
+const [second, setSeconds] = useState(0);
+
+useEffect(() => {
+
+  if(popUpStatus) return;
+
+  const interval = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+      
+  }, 1000);
+  
+  return () => clearInterval(interval);
+}, [second]);
 
 useEffect(() => {
   axios.get(`http://localhost:8000/reset`)
@@ -67,7 +80,7 @@ const handleSize = (e) => {
         </div>
       </section>
       
-      {popUpStatus ? <PopUp></PopUp> : "" }
+      {popUpStatus ? <PopUp time={second}></PopUp> : "" }
       
       <footer className={styles.footerApp}>
         <Keyboard></Keyboard>
@@ -76,4 +89,4 @@ const handleSize = (e) => {
   )
 }
 
-export default App
+export default App;
