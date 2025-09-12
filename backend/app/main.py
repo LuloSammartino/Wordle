@@ -23,26 +23,27 @@ async def ok():
 class Palabra(BaseModel):
     palabra: str
 
-idioma_actual = "es"
-@app.get("/idioma/{idioma}")
-async def cambiar_idioma(idioma: Literal["en","es","fr","pt","de","it","ru","ar","eu","lv","nl","fa"]):
-    """ Cambia el idioma del diccionario """
-    global idioma_actual
-    idioma_actual = idioma
-    return {"mensaje": f"Idioma cambiado a {idioma}"}
-
 def quitar_acentos(palabra):
     return ''.join(c for c in unicodedata.normalize('NFD', palabra)
                 if unicodedata.category(c) != 'Mn')
 
 palabra_correcta = "arbol"
+idioma_actual = "es"       
 largo_actual = 5
 intentos = 0
 letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"n":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
-spell = SpellChecker(language=idioma_actual)
 
-palabras = list(spell.word_frequency.words())
-# palabras = [quitar_acentos(p) for p in palabras]
+palabras = list(SpellChecker(language=idioma_actual).word_frequency.words())
+palabras = [quitar_acentos(p) for p in palabras] # averiguar como sacar los tildes pero no las ñ
+
+@app.get("/idioma/{idioma}")
+async def cambiar_idioma(idioma: Literal["en","es","fr","pt","de","it","ru","ar","eu","lv","nl","fa"]):
+    """ Cambia el idioma del diccionario """
+    global idioma_actual, palabras
+    idioma_actual = idioma
+    palabras = list(SpellChecker(language=idioma).word_frequency.words())
+    palabras = [quitar_acentos(p) for p in palabras]
+    return {"mensaje": f"Idioma cambiado a {idioma}"}
 
 def new_game():
     """Inicia un nuevo juego"""
