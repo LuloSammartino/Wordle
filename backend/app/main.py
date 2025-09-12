@@ -23,12 +23,9 @@ async def ok():
 class Palabra(BaseModel):
     palabra: str
 
-class Idioma(BaseModel):
-    idioma: Literal["en","es","fr","pt","de","it","ru","ar","eu","lv","nl","fa"]
-
 idioma_actual = "es"
 @app.get("/idioma/{idioma}")
-async def cambiar_idioma(idioma:Idioma):
+async def cambiar_idioma(idioma: Literal["en","es","fr","pt","de","it","ru","ar","eu","lv","nl","fa"]):
     """ Cambia el idioma del diccionario """
     global idioma_actual
     idioma_actual = idioma
