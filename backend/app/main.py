@@ -31,8 +31,8 @@ idioma_actual = "es"
 async def cambiar_idioma(idioma:Idioma):
     """ Cambia el idioma del diccionario """
     global idioma_actual
-    idioma_actual = idioma.idioma
-    return {"mensaje": f"Idioma cambiado a {idioma.idioma}"}
+    idioma_actual = idioma
+    return {"mensaje": f"Idioma cambiado a {idioma}"}
 
 def quitar_acentos(palabra):
     return ''.join(c for c in unicodedata.normalize('NFD', palabra)
@@ -45,7 +45,7 @@ letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":
 spell = SpellChecker(language=idioma_actual)
 
 palabras = list(spell.word_frequency.words())
-palabras = [quitar_acentos(p) for p in palabras]
+# palabras = [quitar_acentos(p) for p in palabras]
 
 def new_game():
     """Inicia un nuevo juego"""
