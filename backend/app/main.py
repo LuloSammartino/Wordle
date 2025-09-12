@@ -8,7 +8,7 @@ import unicodedata
 
 app = FastAPI()
 
-app.add_middleware(
+app.add_middleware(            # esto hay que revisarlo para producción
     CORSMiddleware,
     allow_origins=["*"],  # dominio del frontend
     allow_credentials=True,
@@ -27,7 +27,7 @@ class Idioma(BaseModel):
     idioma: Literal["en","es","fr","pt","de","it","ru","ar","eu","lv","nl","fa"]
 
 idioma_actual = "es"
-@app.post("/idioma/")
+@app.get("/idioma/{idioma}")
 async def cambiar_idioma(idioma:Idioma):
     """ Cambia el idioma del diccionario """
     global idioma_actual
