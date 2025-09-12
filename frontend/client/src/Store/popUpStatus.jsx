@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 
 const usePopUpStatus = create((set) => ({
-    popUpStatus: true,
+    popUpStatus: false,
     message: "",
     tryes: 0,
     score: 0,

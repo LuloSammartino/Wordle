@@ -17,7 +17,7 @@ const PopUp = (props) => {
                                 <div className={styles.crossContainer}>
                                     <button onClick={(e) => {setPopUpStatus(false)}} className={styles.cross}>X</button>
                                     </div>
-            <h2 className={styles.message}>{message}¡GANASTE!</h2>
+            <h2 className={styles.message}>{message}</h2>
 
             <article><img src={gifLose} /></article>
 
