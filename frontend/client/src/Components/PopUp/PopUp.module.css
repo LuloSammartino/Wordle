@@ -64,7 +64,7 @@ article img{
     background-color: darkred;
     color: white;
     box-shadow: #000 2px 2px 1px;
-    font-size:clamp(12px, 3vw, 24px);
+    font-size:clamp(12px, 2vw, 24px);
     display: flex;
     justify-content: center;
     font-weight: 400;
@@ -113,7 +113,7 @@ h5{
 }
 
 .buttonContainer button{
-    width: 100%;
+    width: 90%;
     height: 100%;
     font-size: clamp(1rem, 4vw, 3rem);
     border-radius:  12px;

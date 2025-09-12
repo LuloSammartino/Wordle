@@ -8,6 +8,12 @@
     align-items: center;
 }
 
+@media(width < 1100px){
+    .keyboard{
+        width: 60%;
+    }
+}
+
 .keyboardRow{
     display: flex;
     justify-content: center;
