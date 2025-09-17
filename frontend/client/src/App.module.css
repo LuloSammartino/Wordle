@@ -50,6 +50,16 @@ h1{
     
 }
 
+@media(width < 570px){
+    .wordsContainer{
+        width: 60%;
+    }
+    h1{
+        font-size: 30px;
+        width: 90%;
+    }
+}
+
 .footerApp{
     display: flex;
     justify-content: center;

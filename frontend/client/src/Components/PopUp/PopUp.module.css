@@ -70,6 +70,7 @@ article img{
     font-weight: 400;
     margin-right: 3px;
     
+    font-style: normal;
 }   
 
 .cross:active{
@@ -139,4 +140,17 @@ h5{
         height: 40%;
     }
 
+    .buttonContainer button{
+        font-size: 1.5rem
+    }
+
 } 
+
+@media ( width < 700px){
+
+    .popupContainer {
+        width: 50%;
+        height: 35%;
+    }
+
+}
