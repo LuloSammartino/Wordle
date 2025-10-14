@@ -1,4 +1,4 @@
-import Spain from '../assets/spain.png'
+import Spain from '../assets/Spain.png'
 import Usa from '../assets/usa.png'
 import France from '../assets/france.png'
 import Germany from '../assets/germany.png'
