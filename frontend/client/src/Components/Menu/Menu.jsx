@@ -1,27 +1,58 @@
 import styles from './Menu.module.css';
 import axios from 'axios';
 import { Link } from 'react-router';
+import flags from '../../utils/flags';
+import { useState } from 'react';
 
 function Menu() {
 
+const [selectedIndex, setSelectedIndex] = useState(0);
+
+
+
 async function handleLanguage(e)   {
-   await axios.get(`https://wordle-fbkx.onrender.com/idioma/${e}`)
+    await axios.get(`https://wordle-fbkx.onrender.com/idioma/${e}`)
   ;
 }
 
-  return <main className={styles.menuContainer}>
-    <Link to={'/home'}className={styles.idiom} onClick={(e) => handleLanguage("es")}>Español</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("en")}>Ingles</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("fr")}>Frances</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("pt")}>Portugues</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("it")}>Italiano</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("ru")}>Ruso</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("de")}>Aleman</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("ar")}>Arabe</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("eu")}>Vasco</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("nl")}>Holandes</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("fa")}>Persa</Link>
-    <Link to={'/home'}className={styles.idiom} onClick={() => handleLanguage("lv")}>Letón</Link>
+const previousFlag = () => {
+    
+    if(selectedIndex == 0){
+        setSelectedIndex(flags.length -1);
+    } else {
+        setSelectedIndex(selectedIndex -1);
+    }
+}
+
+const nextFlag = () => {
+    
+    if(selectedIndex == flags.length -1){
+        setSelectedIndex(0);
+    } else {
+        setSelectedIndex(selectedIndex +1);
+    }
+
+    
+}
+
+
+  return <main className={styles.mainContainer}>
+
+      <h2 className={styles.tittle}>SELECCIONE EL IDIOMA </h2>
+
+    <div className={styles.menuContainer}>
+
+    <button className={styles.leftArrow} onClick={() => previousFlag()} ></button>
+
+      <Link to={'/home'} className={styles.idiom} onClick={(e) => handleLanguage(flags[selectedIndex].code)} >  
+        <img src={flags[selectedIndex].img} />    
+      </Link>
+    
+    <button className={styles.rightArrow} onClick={() => nextFlag()} ></button>
+
+    </div>
+    
+    
   </main>
   
 }

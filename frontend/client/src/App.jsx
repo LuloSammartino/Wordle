@@ -6,9 +6,11 @@ import axios from "axios";
 import useCorrectWordStore from "./Store/correctWord";
 import PopUp from "./Components/PopUp/PopUp";
 import usePopUpStatus from "./Store/popUpStatus";
+import { Link } from 'react-router';
+import flags from "./utils/flags";
 
 function App() {
-  
+
 const [actualSize, setActualSize] =  useState(5) ;
 const setCorrecta = useCorrectWordStore(state => state.SetNewCorrect);
 const popUpStatus = usePopUpStatus(state => state.popUpStatus)
@@ -32,16 +34,16 @@ useEffect(() => {
 },[])
 
 
-const handleSize = (e) => {
-  setActualSize(e.target.value)
-}
+
 
   return (
 
     <>
       <header className={styles.headerApp}>
 
-        
+      <Link to={'/'} >
+      <button className={styles.language}>🌐</button>  
+      </Link>
       
         
         <h1>EL WORDLE MAS DIFICIL DEL MUNDO</h1>
