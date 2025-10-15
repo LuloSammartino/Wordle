@@ -2,6 +2,7 @@ import styles from './PopUp.module.css'
 import usePopUpStatus from '../../Store/popUpStatus';
 import useCorrectWordStore from '../../Store/correctWord';
 import gifLose from '../../assets/Lose.gif';
+import axios from 'axios';
 
 const PopUp = (props) => {
 
@@ -11,6 +12,12 @@ const PopUp = (props) => {
     const setPopUpStatus = usePopUpStatus(state => state.setPopUpStauts)
     const minuts = Math.floor(props.time / 60) ;
     const seconds = props.time % 60 ;
+
+    const handleNewGame = () => {
+        setPopUpStatus(false)
+        location.reload()
+        axios.get(`https://wordle-fbkx.onrender.com/reset`)
+    }
 
     return (
         <div className={styles.popupContainer}>
