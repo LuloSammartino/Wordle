@@ -1,12 +1,12 @@
-import Spain from '../assets/Spain.png'
-import Usa from '../assets/Usa.png'
-import France from '../assets/France.png'
-import Germany from '../assets/Germany.png'
-import Italy from '../assets/Italy.png'
-import Netherlands from '../assets/Netherlands.png'
-import Brazil from '../assets/Brazil.png'
-import SaudiArabia from '../assets/SaudiArab.png'
-import Russia from '../assets/Russia.png'
+import Spain from '../assets/flags/Spain.webp'
+import Usa from '../assets/flags/Usa.webp'
+import France from '../assets/flags/France.webp'
+import Germany from '../assets/flags/Germany.webp'
+import Italy from '../assets/flags/Italy.webp'
+import Netherlands from '../assets/flags/Netherlands.webp'
+import Brazil from '../assets/flags/Brazil.webp'
+import SaudiArabia from '../assets/flags/SaudiArab.webp'
+import Russia from '../assets/flags/Russia.webp'
 
 const flags = [
     { code: "es", img: Spain },

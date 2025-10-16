@@ -7,7 +7,7 @@ import useCorrectWordStore from "./Store/correctWord";
 import PopUp from "./Components/PopUp/PopUp";
 import usePopUpStatus from "./Store/popUpStatus";
 import { Link } from 'react-router';
-import flags from "./utils/flags";
+
 
 function App() {
 
