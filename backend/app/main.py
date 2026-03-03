@@ -5,8 +5,13 @@ from spellchecker import SpellChecker
 import random as rm
 from typing import Literal
 import unicodedata
+from .database import init_db_pool, close_db_pool
+from .register import router as user_router
 
 app = FastAPI()
+
+# Incluir router de usuarios
+app.include_router(user_router, prefix="/user", tags=["users"])
 
 app.add_middleware(            # esto hay que revisarlo para producción
     CORSMiddleware,
@@ -56,7 +61,18 @@ def new_game():
 @app.on_event("startup")
 def startup_event():
     """ Evento que se ejecuta al iniciar la aplicación """
+    # Inicializar pool de conexiones a Oracle
+    try:
+        init_db_pool()
+    except Exception as e:
+        print(f"⚠️ Advertencia: No se pudo conectar a Oracle Database: {e}")
+        print("⚠️ La aplicación continuará sin base de datos (modo fallback)")
     new_game()
+
+@app.on_event("shutdown")
+def shutdown_event():
+    """ Evento que se ejecuta al cerrar la aplicación """
+    close_db_pool()
 
 @app.get("/reset")
 def reset_game():
