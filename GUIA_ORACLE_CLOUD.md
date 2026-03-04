@@ -6,16 +6,16 @@ Esta guía te ayudará a configurar Oracle Cloud Database para almacenar usuario
 
 ## 📋 Tabla de Contenidos
 
- 🎯 [Requisitos Previos](#requisitos-previos)
- 🎯 [Paso 1: Crear Base de Datos en Oracle Cloud](#paso-1-crear-base-de-datos-en-oracle-cloud)
- 🎯 [Paso 2: Obtener Credenciales de Conexión](#paso-2-obtener-credenciales-de-conexión)
- 🎯 [Paso 3: Configurar Variables de Entorno](#paso-3-configurar-variables-de-entorno)
- 🎯 [Paso 4: Instalar Dependencias](#paso-4-instalar-dependencias)
- 🎯 [Paso 5: Crear Esquema de Base de Datos](#paso-5-crear-esquema-de-base-de-datos)
- 🎯 [Paso 6: Verificar la Conexión](#paso-6-verificar-la-conexión)
- 🎯 [Paso 7: Probar la Integración](#paso-7-probar-la-integración)
- 🎯 [Estructura de la Base de Datos](#estructura-de-la-base-de-datos)
- 🎯 [Troubleshooting](#troubleshooting)
+ 1. [Requisitos Previos](#requisitos-previos)
+ 2. [Paso 1: Crear Base de Datos en Oracle Cloud](#paso-1-crear-base-de-datos-en-oracle-cloud)
+ 3. [Paso 2: Obtener Credenciales de Conexión](#paso-2-obtener-credenciales-de-conexión)
+ 4. [Paso 3: Configurar Variables de Entorno](#paso-3-configurar-variables-de-entorno)
+ 5. [Paso 4: Instalar Dependencias](#paso-4-instalar-dependencias)
+ 6. [Paso 5: Crear Esquema de Base de Datos](#paso-5-crear-esquema-de-base-de-datos)
+ 7. [Paso 6: Verificar la Conexión](#paso-6-verificar-la-conexión)
+ 8. [Paso 7: Probar la Integración](#paso-7-probar-la-integración)
+ 9. [Estructura de la Base de Datos](#estructura-de-la-base-de-datos)
+ 10. [Troubleshooting](#troubleshooting)
 
 ---
 
