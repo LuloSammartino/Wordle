@@ -7,7 +7,7 @@ Esta guía te ayudará a configurar Oracle Cloud Database para almacenar usuario
 ## 📋 Tabla de Contenidos
 
 1. [Requisitos Previos](#requisitos-previos)
-2. [Paso 1: Crear Base de Datos en Oracle Cloud](#paso-1-crear-base-de-datos-en-oracle-cloud)
+ [Paso 1: Crear Base de Datos en Oracle Cloud](#paso-1-crear-base-de-datos-en-oracle-cloud)
 3. [Paso 2: Obtener Credenciales de Conexión](#paso-2-obtener-credenciales-de-conexión)
 4. [Paso 3: Configurar Variables de Entorno](#paso-3-configurar-variables-de-entorno)
 5. [Paso 4: Instalar Dependencias](#paso-4-instalar-dependencias)
