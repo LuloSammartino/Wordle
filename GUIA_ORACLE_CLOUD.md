@@ -6,16 +6,16 @@ Esta guía te ayudará a configurar Oracle Cloud Database para almacenar usuario
 
 ## 📋 Tabla de Contenidos
 
-1. [Requisitos Previos](#requisitos-previos)
-2. [Paso 1: Crear Base de Datos en Oracle Cloud](#paso-1-crear-base-de-datos-en-oracle-cloud)
-3. [Paso 2: Obtener Credenciales de Conexión](#paso-2-obtener-credenciales-de-conexión)
-4. [Paso 3: Configurar Variables de Entorno](#paso-3-configurar-variables-de-entorno)
-5. [Paso 4: Instalar Dependencias](#paso-4-instalar-dependencias)
-6. [Paso 5: Crear Esquema de Base de Datos](#paso-5-crear-esquema-de-base-de-datos)
-7. [Paso 6: Verificar la Conexión](#paso-6-verificar-la-conexión)
-8. [Paso 7: Probar la Integración](#paso-7-probar-la-integración)
-9. [Estructura de la Base de Datos](#estructura-de-la-base-de-datos)
-10. [Troubleshooting](#troubleshooting)
+ 1. [Requisitos Previos](#requisitos-previos)
+ 2. [Paso 1 Crear Base de Datos en Oracle Cloud](#paso-1-crear-base-de-datos-en-oracle-cloud)
+ 3. [Paso 2 Obtener Credenciales de Conexión](#paso-2-obtener-credenciales-de-conexión)
+ 4. [Paso 3 Configurar Variables de Entorno](#paso-3-configurar-variables-de-entorno)
+ 5. [Paso 4: Instalar Dependencias](#paso-4-instalar-dependencias)
+ 6. [Paso 5: Crear Esquema de Base de Datos](#paso-5-crear-esquema-de-base-de-datos)
+ 7. [Paso 6: Verificar la Conexión](#paso-6-verificar-la-conexión)
+ 8. [Paso 7: Probar la Integración](#paso-7-probar-la-integración)
+ 9. [Estructura de la Base de Datos](#estructura-de-la-base-de-datos)
+ 10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -27,7 +27,7 @@ Esta guía te ayudará a configurar Oracle Cloud Database para almacenar usuario
 
 ---
 
-## 📝 Paso 1: Crear Base de Datos en Oracle Cloud
+## Paso 1: Crear Base de Datos en Oracle Cloud
 
 ### 1.1. Acceder a Oracle Cloud Console
 
@@ -64,7 +64,7 @@ Esta guía te ayudará a configurar Oracle Cloud Database para almacenar usuario
 
 ---
 
-## 🔑 Paso 2: Obtener Credenciales de Conexión
+## Paso 2: Obtener Credenciales de Conexión
 
 ### 2.1. Información del Wallet
 
@@ -116,7 +116,7 @@ Pero necesitarás configurar el wallet. Para simplificar, usa el formato complet
 
 ---
 
-## 🌍 Paso 3: Configurar Variables de Entorno
+## Paso 3: Configurar Variables de Entorno
 
 ### 3.1. Crear archivo `.env`
 
@@ -152,7 +152,7 @@ Configura las variables de entorno en el panel de tu plataforma de hosting.
 
 ---
 
-## 📦 Paso 4: Instalar Dependencias
+## Paso 4: Instalar Dependencias
 
 ### 4.1. Instalar Python Dependencies
 
@@ -176,7 +176,7 @@ python -c "import oracledb; print('Oracle driver instalado correctamente')"
 
 ---
 
-## 🗄️ Paso 5: Crear Esquema de Base de Datos
+## Paso 5: Crear Esquema de Base de Datos
 
 ### 5.1. Opción A: Usando SQL Developer o SQL\*Plus
 
@@ -263,7 +263,7 @@ Deberías ver:
 
 ---
 
-## ✅ Paso 6: Verificar la Conexión
+## Paso 6: Verificar la Conexión
 
 ### 6.1. Script de Prueba
 
@@ -307,7 +307,7 @@ Si ves "✅ Conexión exitosa!", ¡estás listo!
 
 ---
 
-## 🧪 Paso 7: Probar la Integración
+## Paso 7: Probar la Integración
 
 ### 7.1. Iniciar el Servidor
 
@@ -372,7 +372,7 @@ curl -X GET "http://localhost:8000/user/progress/letters/2024-01-15" \
 
 ---
 
-## 📊 Estructura de la Base de Datos
+## Estructura de la Base de Datos
 
 ### Tabla: `usuarios`
 
@@ -419,7 +419,7 @@ Almacena estadísticas detalladas de cada letra.
 
 ---
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Error: "ORA-12541: TNS:no listener"
 
