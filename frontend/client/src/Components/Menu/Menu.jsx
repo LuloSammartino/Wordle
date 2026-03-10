@@ -51,6 +51,12 @@ const nextFlag = () => {
     <button className={styles.rightArrow} onClick={() => nextFlag()} ></button>
 
     </div>
+
+    <div className={styles.authRow}>
+      <Link className={styles.authBtn} to={"/login"}>
+        Iniciar sesión
+      </Link>
+    </div>
     
     
   </main>

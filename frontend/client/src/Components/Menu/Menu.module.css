@@ -53,3 +53,31 @@
 .leftArrow:hover{
     border-right: 30px solid #9c0606;
 }
+
+.authRow{
+    margin-top: 30px;
+}
+
+.authBtn{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background-color: #70af4c;
+    color: white;
+    box-shadow: #000 5px 5px 1px;
+    border: 1px solid rgba(0,0,0,0.6);
+    font-size: 32px;
+    font-style: normal;
+}
+
+.authBtn:hover{
+    background-color: #4c8f36;
+}
+
+.authBtn:active{
+    box-shadow: #000 2px 2px 1px;
+    translate: 2px 2px;
+}
