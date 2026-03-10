@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import styles from "./Login.module.css";
-
+import world_gif from "../../assets/world.gif"
 
 export default function Login() {
     const navigate = useNavigate();
@@ -87,9 +87,8 @@ export default function Login() {
             <section className={styles.panel} aria-label="Acceso de usuario">
                 <div className={styles.topRow}>
                     <Link className={styles.back} to={"/"} title="Volver al menú">
-                        ⟵
+                        X
                     </Link>
-                    <h2 className={styles.title}>WORLDE</h2>
 
                 </div>
 
@@ -116,16 +115,28 @@ export default function Login() {
 
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <label className={styles.label}>
-                        Usuario
+                        Email
                         <input
                             className={styles.input}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="tu_usuario"
                             autoComplete="username"
                             disabled={loading}
                         />
                     </label>
+
+                    {mode === "register" ? (
+                        <label className={styles.label}>
+                            Nombre de usuario
+                            <input
+                                className={styles.input}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                autoComplete="new-password"
+                                disabled={loading}
+                            />
+                        </label>
+                    ) : null}
 
                     <label className={styles.label}>
                         Contraseña
@@ -133,7 +144,6 @@ export default function Login() {
                             className={styles.input}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
                             type="password"
                             autoComplete={mode === "login" ? "current-password" : "new-password"}
                             disabled={loading}
@@ -147,7 +157,6 @@ export default function Login() {
                                 className={styles.input}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="••••••••"
                                 type="password"
                                 autoComplete="new-password"
                                 disabled={loading}
