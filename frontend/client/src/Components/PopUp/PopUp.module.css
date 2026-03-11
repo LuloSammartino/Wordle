@@ -13,7 +13,7 @@
     align-items: center;
     flex-direction: column;
     background: #eaff00;
-    background: radial-gradient(circle,rgba(234, 255, 0, 1) 0%, rgba(252, 97, 0, 1) 100%);
+    background: radial-gradient(circle, rgba(234, 255, 0, 1) 0%, rgba(252, 97, 0, 1) 100%);
     padding: 5px;
     box-shadow: #000 4px 4px 1px;
     animation: popIn 0.8s;
@@ -24,6 +24,7 @@
         transform: scale(0.5);
         opacity: 0;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -31,11 +32,11 @@
 }
 
 
-article{
+article {
     height: 20%;
 }
 
-article img{
+article img {
     height: 100%;
 }
 
@@ -48,37 +49,37 @@ article img{
     font-weight: 400;
 }
 
-.crossContainer{
+.crossContainer {
     width: 100%;
     height: fit-content;
     display: flex;
-    justify-content: end;  
+    justify-content: end;
     align-items: end;
     margin-top: 6px;
 }
 
-.cross{
+.cross {
     width: 6%;
-    border-radius:  10px;
+    border-radius: 10px;
     cursor: pointer;
     background-color: darkred;
     color: white;
     box-shadow: #000 2px 2px 1px;
-    font-size:clamp(12px, 2vw, 24px);
+    font-size: clamp(12px, 2vw, 24px);
     display: flex;
     justify-content: center;
     font-weight: 400;
     margin-right: 3px;
-    
-    font-style: normal;
-}   
 
-.cross:active{
+    font-style: normal;
+}
+
+.cross:active {
     box-shadow: #000 1px 1px 1px;
     translate: 2px 2px;
 }
 
-.cross:hover{
+.cross:hover {
     background-color: rgb(97, 6, 6);
 }
 
@@ -90,63 +91,63 @@ h3 {
     font-weight: 400;
 }
 
-h3 p{
+h3 p {
     display: inline;
     text-decoration: underline;
     font-weight: 400;
 }
 
-h5{
+h5 {
     font-size: clamp(12px, 2vw, 24px);
     height: 6.5%;
     font-weight: 400;
     text-align: center;
 }
 
-.buttonContainer{
+.buttonContainer {
     width: 90%;
     height: 20%;
     display: flex;
-    justify-content: center;  
+    justify-content: center;
     align-items: center;
     margin-bottom: 10px;
     margin-top: 10px;
 }
 
-.buttonContainer button{
+.buttonContainer button {
     width: 90%;
     height: 100%;
     font-size: clamp(1rem, 4vw, 3rem);
-    border-radius:  12px;
+    border-radius: 12px;
     cursor: pointer;
     background-color: #70af4c;
     color: white;
     box-shadow: #000 5px 5px 1px;
-    
+
 }
 
-.buttonContainer button:hover{
+.buttonContainer button:hover {
     background-color: #4c8f36;
 }
 
-.buttonContainer button:active{
+.buttonContainer button:active {
     box-shadow: #000 2px 2px 1px;
     translate: 2px 2px;
 }
 
-@media ( width < 1050px){
+@media (width < 1050px) {
 
     .popupContainer {
         height: 40%;
     }
 
-    .buttonContainer button{
+    .buttonContainer button {
         font-size: 1.5rem
     }
 
-} 
+}
 
-@media ( width < 700px){
+@media (width < 700px) {
 
     .popupContainer {
         width: 50%;

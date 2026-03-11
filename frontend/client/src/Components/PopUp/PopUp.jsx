@@ -3,11 +3,13 @@ import usePopUpStatus from '../../Store/popUpStatus';
 import useCorrectWordStore from '../../Store/correctWord';
 import gifLose1 from '../../assets/Lose.gif';
 import gifLose2 from '../../assets/Lose2.gif';
+import gifWin from '../../assets/win.gif';
 
 
 const PopUp = (props) => {
 
     const gifsLose = [gifLose1, gifLose2]
+    const gifsWin = [gifWin]
     const correctWord = useCorrectWordStore(state => state.correctWord)
     const message = usePopUpStatus(state => state.message)
     const tryes = usePopUpStatus(state => state.tryes)
@@ -19,6 +21,7 @@ const PopUp = (props) => {
         const n = Math.floor(Math.random() * 2);
 
         if (state !== "¡GANASTE!") return gifsLose[n]
+        else return gifsWin[0];
     }
 
 

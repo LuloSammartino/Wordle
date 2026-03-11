@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import styles from "./Login.module.css";
-import world_gif from "../../assets/world.gif"
+
 
 export default function Login() {
     const navigate = useNavigate();
@@ -84,6 +84,7 @@ export default function Login() {
 
     return (
         <main className={styles.screen}>
+
             <section className={styles.panel} aria-label="Acceso de usuario">
                 <div className={styles.topRow}>
                     <Link className={styles.back} to={"/"} title="Volver al menú">
