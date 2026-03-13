@@ -1,15 +1,11 @@
 import styles from './PopUp.module.css'
 import usePopUpStatus from '../../Store/popUpStatus';
 import useCorrectWordStore from '../../Store/correctWord';
-import gifLose1 from '../../assets/Lose.gif';
-import gifLose2 from '../../assets/Lose2.gif';
-import gifWin from '../../assets/win.gif';
+import { gifsLose, gifsWin } from '../../utils/gifs';
 
 
 const PopUp = (props) => {
 
-    const gifsLose = [gifLose1, gifLose2]
-    const gifsWin = [gifWin]
     const correctWord = useCorrectWordStore(state => state.correctWord)
     const message = usePopUpStatus(state => state.message)
     const tryes = usePopUpStatus(state => state.tryes)
@@ -18,10 +14,10 @@ const PopUp = (props) => {
     const seconds = props.time % 60;
 
     function RandomGif(state) {
-        const n = Math.floor(Math.random() * 2);
+        const n = Math.floor(Math.random() * 3);
 
         if (state !== "¡GANASTE!") return gifsLose[n]
-        else return gifsWin[0];
+        else return gifsWin[n];
     }
 
 

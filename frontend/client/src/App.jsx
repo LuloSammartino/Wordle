@@ -1,7 +1,7 @@
 import Word from "./Components/Word/Word"
 import styles from './App.module.css';
 import Keyboard from "./Components/Keyboard/Keyboard";
-import { useEffect , useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import useCorrectWordStore from "./Store/correctWord";
 import PopUp from "./Components/PopUp/PopUp";
@@ -11,27 +11,27 @@ import { Link } from 'react-router';
 
 function App() {
 
-const [actualSize, setActualSize] =  useState(5) ;
-const setCorrecta = useCorrectWordStore(state => state.SetNewCorrect);
-const popUpStatus = usePopUpStatus(state => state.popUpStatus)
-const [second, setSeconds] = useState(0);
+  const [actualSize, setActualSize] = useState(5);
+  const setCorrecta = useCorrectWordStore(state => state.SetNewCorrect);
+  const popUpStatus = usePopUpStatus(state => state.popUpStatus)
+  const [second, setSeconds] = useState(0);
 
-useEffect(() => {
+  useEffect(() => {
 
-  if(popUpStatus) return;
+    if (popUpStatus) return;
 
-  const interval = setInterval(() => {
+    const interval = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
-      
-  }, 1000);
-  
-  return () => clearInterval(interval);
-}, [second]);
 
-useEffect(() => {
-  axios.get(`https://wordle-fbkx.onrender.com/reset`)
-  .then(res => { setCorrecta(res.data.palabra_correcta)})
-},[])
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [second]);
+
+  useEffect(() => {
+    axios.get(`https://wordle-fbkx.onrender.com/reset`)
+      .then(res => { setCorrecta(res.data.palabra_correcta) })
+  }, [])
 
 
 
@@ -41,11 +41,11 @@ useEffect(() => {
     <>
       <header className={styles.headerApp}>
 
-      <Link to={'/'} >
-      <button className={styles.language}>🌐</button>  
-      </Link>
-      
-        
+        <Link to={'/'} >
+          <button className={styles.language} disabled={popUpStatus}>🌐</button>
+        </Link>
+
+
         <h1>EL WORDLE MAS DIFICIL DEL MUNDO</h1>
         {/* <select onChange={(e) => handleSize(e)} > 
           <option value="1" >1</option>
@@ -81,9 +81,9 @@ useEffect(() => {
           <Word index={4} size={actualSize}></Word>
         </div>
       </section>
-      
-      {popUpStatus ? <PopUp time={second}></PopUp> : "" }
-      
+
+      {popUpStatus ? <PopUp time={second}></PopUp> : ""}
+
       <footer className={styles.footerApp}>
         <Keyboard></Keyboard>
       </footer>
