@@ -83,7 +83,7 @@ def registro_usuario(connection, username, email, password):
             print(f"Usuario: {username} registrado.")
             return True
     except Exception as e:
-        print("Error al registrar: {e}")
+        print(f"Error al registrar: {e}")
         return False
 
 # usuario como token (JWT) despues del login
