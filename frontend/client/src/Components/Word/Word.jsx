@@ -5,12 +5,10 @@ import useLetters from '../../Store/lettersStatus';
 import usePopUpStatus from '../../Store/popUpStatus';
 import axios from 'axios';
 import { animate } from 'animejs';
-import faah from '../../assets/faaah.mp3';
 
 
 function Word({ index }) {
 
-    const Faah = new Audio(faah);
     const activeWord = useActiveWordStore(state => state.activeWord)
     const nextWord = useActiveWordStore(state => state.Next)
     const setLetters = useLetters(state => state.SetLetters)
@@ -63,8 +61,6 @@ function Word({ index }) {
             .catch((err) => {
                 animate(letterRefs.map(ref => ref.current),
                     { translateX: [0, 10, -10, 10, -10, 0], duration: 500 })
-                Faah.currentTime = 0;
-                Faah.play();
             })
 
 
