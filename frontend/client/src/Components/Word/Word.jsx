@@ -34,13 +34,11 @@ function Word({ index }) {
         setTryes(tryes)
     }
 
+    //Funcion que devuelve el estilo correcto depende el estado de la letra,
+    //El array se define fuera de la funcion para que no se cree con cada ejecucion
+    const colors = [styles.incorrect, styles.halfCorrect, styles.correct];
     function handleResultColors(e) {
-        if (e == 2)
-            return styles.correct;
-        if (e == 1)
-            return styles.halfCorrect;
-        if (e == 0)
-            return styles.incorrect;
+         return colors[e] ?? styles.default;
     }
 
     const handleWord = async (word) => {
