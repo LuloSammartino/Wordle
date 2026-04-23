@@ -8,6 +8,8 @@ const letters = [
     ['Z','X','C','V','B','N','M']
 ];
 
+// Funcion que devuelve un className de estilado para pintar las palabras del teclado de verde/amarillo/rojo segun corresponda
+// Busca en el estado global de letters que numero le corresponde a la letra
 const handleKeyColors = (e) => {
     let letter = e.toLowerCase()
     const lettersStatus = useLetters(state => state.letters)
