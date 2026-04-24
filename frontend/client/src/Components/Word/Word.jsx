@@ -1,28 +1,42 @@
 import styles from './Word.module.css';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { animate } from 'animejs';
+import axios from 'axios';
 import useActiveWordStore from '../../Store/activeWord';
 import useLetters from '../../Store/lettersStatus';
 import usePopUpStatus from '../../Store/popUpStatus';
-import axios from 'axios';
-import { animate } from 'animejs';
+
+
+    //Funcion que devuelve el estilo correcto depende el estado de la letra,
+    //El array se define fuera de la funcion para que no se cree con cada ejecucion
+    const colors = [styles.incorrect, styles.halfCorrect, styles.correct];
+    function handleResultColors(e) {
+         return colors[e] ?? styles.default;
+    }
 
 
 function Word({ index }) {
-
+    
+    // Store 
     const activeWord = useActiveWordStore(state => state.activeWord)
     const nextWord = useActiveWordStore(state => state.Next)
-    const setLetters = useLetters(state => state.SetLetters)
-    const [actualLetter, setActualLetter] = useState(0)
-    const [result, setResult] = useState([])
-    const [letters, setLettersState] = useState(["", "", "", "", ""])
-    const letterRefs = [useRef(), useRef(), useRef(), useRef(), useRef()]
-    const rowRef = useRef(null)
     const setPopUpStatus = usePopUpStatus(state => state.setPopUpStauts)
+    const setLetters = useLetters(state => state.SetLetters)
     const setMessage = usePopUpStatus(state => state.setMessage)
     const setTryes = usePopUpStatus(state => state.setTryes)
 
+    // Local Store
+    const [actualLetter, setActualLetter] = useState(0)
+    const [result, setResult] = useState([])
+    const [letters, setLettersState] = useState(["", "", "", "", ""])
+
+    const letterRefs = [useRef(), useRef(), useRef(), useRef(), useRef()]
+    const rowRef = useRef(null)
+
+    const isActive = activeWord === index;
+    
     useEffect(() => {
-        if (activeWord === index && rowRef.current) {
+        if (isActive && rowRef.current) {
             rowRef.current.focus();
         }
     }, [activeWord])
@@ -34,33 +48,32 @@ function Word({ index }) {
         setTryes(tryes)
     }
 
-    //Funcion que devuelve el estilo correcto depende el estado de la letra,
-    //El array se define fuera de la funcion para que no se cree con cada ejecucion
-    const colors = [styles.incorrect, styles.halfCorrect, styles.correct];
-    function handleResultColors(e) {
-         return colors[e] ?? styles.default;
-    }
+    const shakeAnimation = useCallback(() => {
+        animate(letterRefs.current, {
+            translateX: [0, 10, -10, 10, -10, 0],
+            duration: 500,
+            easing: 'easeInOutSine'
+        });
+    }, []);
 
     const handleWord = async (word) => {
 
-        await axios.get(`https://wordle-fbkx.onrender.com/intento/${word}`)
-            .then((res) => {
-                setResult(res.data.resultado)
-                nextWord()
-                setLetters(res.data.letras)
-                if (res.data.intentos == 5) {
-                    res.data.resultado.includes(1) || res.data.resultado.includes(0) ?
-                        handlePopUp("¡PERDISTE!", res.data.intentos) : "";
-                }
-                if (res.data.resultado.every(e => e == 2)) {
-                    handlePopUp("¡GANASTE!", res.data.intentos);
-                }
-            })
-            .catch((err) => {
-                animate(letterRefs.map(ref => ref.current),
-                    { translateX: [0, 10, -10, 10, -10, 0], duration: 500 })
-            })
+       try {
+            const { data } = await axios.get(`https://wordle-fbkx.onrender.com/intento/${word}`);
+            
+            setResult(data.resultado);
+            setLettersGlobal(data.letras);
+            nextWord();
 
+            const isWin = data.resultado.every(val => val === 2);
+            if (isWin) {
+                handlePopUp("¡GANASTE!", data.intentos);
+            } else if (data.intentos === 5) {
+                handlePopUp("¡PERDISTE!", data.intentos);
+            }
+        } catch (err) {
+            shakeAnimation();
+        }
 
     }
 
@@ -70,7 +83,7 @@ function Word({ index }) {
 
     const handleKeyDown = (e) => {
 
-        if (activeWord !== index) return;
+        if (!isActive) return;
 
         switch (e.key) {
             // letras A-Z
@@ -121,7 +134,7 @@ function Word({ index }) {
     return (
         <main
             className={styles.word}
-            tabIndex={activeWord === index ? 0 : -1}
+            tabIndex={isActive ? 0 : -1}
             onKeyDown={handleKeyDown}
             ref={rowRef}
         >
@@ -132,12 +145,12 @@ function Word({ index }) {
                     key={i}
                     ref={ref}
                     className={`${styles.letter} 
-                        ${(actualLetter === i && activeWord === index) ? styles.active : ""}
+                        ${(actualLetter === i && isActive) ? styles.active : ""}
                         ${letters[i] ? styles.filled : ""}
                         ${result.length ? handleResultColors(result[i]) : ""}`
                     }
                     onClick={() => {
-                        if (activeWord === index) {
+                        if (isActive) {
                             setActualLetter(i);
                             rowRef.current && rowRef.current.focus();
                         }
