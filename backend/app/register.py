@@ -26,21 +26,10 @@ class UserData(BaseModel):
     score: int = 0
     words: list[str] = []
 
-class LetterProgress(BaseModel):
-    letra: str
-    estado: int  # 0: incorrecta, 1: en palabra pero lugar incorrecto, 2: correcta
-
-class DailyProgress(BaseModel):
+class WordProgress(BaseModel):
     palabra_completada: str
     intentos: int
     score: int
-    letras: dict  # Diccionario con letras y su estado
-
-class UpdateProgressRequest(BaseModel):
-    score: int
-    word: str
-    intentos: int
-    letras: dict
 
 # Funciones auxiliares
 def get_password_hash(password):
@@ -112,8 +101,8 @@ def register_user(user: UserRegister):
         raise
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al registrar usuario: {str(e)}")
-    finally:
+        raise HTTPException(status_code=500, detail=f"Error al registrar usuario")
+    with:
         conn.close()
 
 # Login
@@ -269,80 +258,6 @@ def update_progress(
     finally:
         conn.close()
 
-# Obtener letras completadas por día
-@router.get("/progress/letters/{fecha}")
-def get_letters_by_date(fecha: str, current_user=Depends(get_current_user)):
-    """Obtiene las letras completadas en una fecha específica"""
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-        user_id = current_user["user_id"]
-        
-        # Convertir string de fecha a date
-        fecha_obj = datetime.strptime(fecha, "%Y-%m-%d").date()
-        
-        cursor.execute("""
-            SELECT letras_completadas, palabra_completada, intentos
-            FROM progreso_diario
-            WHERE user_id = :user_id AND fecha = :fecha
-        """, {"user_id": user_id, "fecha": fecha_obj})
-        
-        result = cursor.fetchone()
-        if not result:
-            return {"message": "No hay progreso para esta fecha", "letras": {}, "palabra": None}
-        
-        letras_json = result[0]
-        palabra = result[1]
-        intentos = result[2]
-        
-        letras = json.loads(letras_json) if letras_json else {}
-        
-        return {
-            "fecha": fecha,
-            "palabra_completada": palabra,
-            "intentos": intentos,
-            "letras": letras
-        }
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Formato de fecha inválido. Use YYYY-MM-DD")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener letras: {str(e)}")
-    finally:
-        conn.close()
 
-# Obtener estadísticas de letras
-@router.get("/statistics/letters")
-def get_letter_statistics(current_user=Depends(get_current_user)):
-    """Obtiene estadísticas de uso de letras del usuario"""
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-        user_id = current_user["user_id"]
-        
-        cursor.execute("""
-            SELECT letra, estado, COUNT(*) as cantidad
-            FROM estadisticas_letras
-            WHERE user_id = :user_id
-            GROUP BY letra, estado
-            ORDER BY letra, estado
-        """, {"user_id": user_id})
-        
-        results = cursor.fetchall()
-        estadisticas = {}
-        
-        for letra, estado, cantidad in results:
-            if letra not in estadisticas:
-                estadisticas[letra] = {"correcta": 0, "parcial": 0, "incorrecta": 0}
-            
-            if estado == 2:
-                estadisticas[letra]["correcta"] = cantidad
-            elif estado == 1:
-                estadisticas[letra]["parcial"] = cantidad
-            else:
-                estadisticas[letra]["incorrecta"] = cantidad
-        
-        return {"estadisticas": estadisticas}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener estadísticas: {str(e)}")
-    finally:
-        conn.close()
+
+
