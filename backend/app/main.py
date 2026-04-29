@@ -15,7 +15,7 @@ app.include_router(user_router, prefix="/user", tags=["users"])
 
 app.add_middleware(            # esto hay que revisarlo para producción
     CORSMiddleware,
-    allow_origins=["*"],  # dominio del frontend
+    allow_origins=["https://wordle-front-y7gp.onrender.com/"],  # dominio del frontend
     allow_credentials=True,
     allow_methods=["*"],  
     allow_headers=["*"],  
