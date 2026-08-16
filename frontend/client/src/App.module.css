@@ -1,6 +1,4 @@
-
-
-.headerApp{
+.headerApp {
     width: 100%;
     height: 20vh;
     display: flex;
@@ -9,7 +7,7 @@
     background-color: #2d2b2b;
 }
 
-.language{
+.language {
     position: absolute;
     top: 20px;
     right: 20px;
@@ -21,44 +19,54 @@
     font-size: 1.5rem;
     border-radius: 50%;
     box-shadow: 2px 2px 4px #000;
-    
+
 }
 
-.videoBackground{
+.videoBackground {
     position: absolute;
     z-index: -1;
     height: 100%;
     width: 100%;
 }
 
-h1{
+h1 {
     background-image: url("./assets/fireplace-love.gif");
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: end;
-    padding-inline:5px ;
+    padding-inline: 5px;
     margin-bottom: 50px;
     text-shadow: 2px 2px 4px #fff;
     font-size: 50px;
 }
 
-.content{
+.content {
     height: 50vh;
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     background-color: lightyellow;
+    flex-direction: column;
+}
+
+.dificultad {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    font-size: 20px;
 }
 
 .wordsContainer {
-    
+
     width: 30%;
     height: 100%;
-    padding: 10px ;
+    padding: 10px;
 }
 
-.footerApp{
+.footerApp {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -67,34 +75,34 @@ h1{
     background-color: #330000;
 }
 
-@media(width < 1100px){
-    .wordsContainer{
+@media(width < 1100px) {
+    .wordsContainer {
         width: 50%;
     }
-    
+
 }
 
-@media(width < 650px){
-    .wordsContainer{
+@media(width < 650px) {
+    .wordsContainer {
         width: 70%;
     }
-    h1{
+
+    h1 {
         font-size: 30px;
         width: 90%;
     }
 
 }
 
-@media(width < 400px){
-    .wordsContainer{
+@media(width < 400px) {
+    .wordsContainer {
         width: 90%;
     }
-    h1{
+
+    h1 {
         font-size: 20px;
         width: 90%;
         margin-bottom: 20px;
     }
 
 }
-
-

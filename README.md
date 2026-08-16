@@ -1,97 +1,61 @@
-# 🕹️ Wordle
+# WORLDE
 
-Este repositorio contiene una aplicación de Wordle organizada en dos partes principales:
+Juego tipo Wordle multilingüe con frontend React/Vite y API FastAPI. Cada partida
+tiene un identificador independiente; la respuesta permanece en el servidor hasta
+que el jugador gana o agota sus cinco intentos.
 
-- **backend**: API/recurso para la lógica del juego.
-- **frontend**: Interfaz de usuario (web).
+## Requisitos
 
----
+- Node.js 20 o superior.
+- Python 3.10 o superior.
+- Oracle solamente si se usarán cuentas y progreso.
 
-## 🎯 Requisitos previos
+## Desarrollo
 
-Asegúrate de tener instaladas las siguientes herramientas:
+### Backend
 
-- [Node.js](https://nodejs.org) (v14 o superior) — para el frontend.
-- [npm](https://www.npmjs.com) o [yarn] — gestor de paquetes para Node.js.
-- [Python](https://www.python.org) (v3.7 o superior).
-
----
-
-## ⛓️‍💥 Clonación del repositorio
-
-```bash
-git clone https://github.com/LuloSammartino/Wordle.git
-cd Wordle
-```
-
----
-
-## 💻 Backend
-
-Entra a la carpeta del backend:
-
-```bash
+```powershell
 cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
-### 1. Instalación de dependencias
+El juego anónimo funciona aunque Oracle no esté configurado. Para cuentas, copia
+`../.env.example` como `backend/.env`, completa las variables Oracle y ejecuta
+`backend/app/schema.sql` en la base.
 
+### Frontend
 
-  ```bash
-  python3 -m venv venv
-  source .venv/Scripts/activate    
-  pip install -r requirements.txt
-  ```
-
-### 2. Iniciar el servidor
-
-- **Python (FastAPI)**:
-  ```bash
-  uvicorn app.main:app --reload
-  ```
-
-Verás algo como: `Backend escuchando en http://localhost:8000`.
-
----
-
-## 🖥️ Frontend
-
-Abre una nueva terminal, vuelve al directorio principal y luego entra al frontend:
-
-```bash
-cd ../frontend
-```
-
-### 1. Instalación de dependencias
-
-```bash
-npm install
-# o
-yarn install
-```
-
-
-### 2. Iniciar el servidor de desarrollo
-
-```bash
+```powershell
+cd frontend/client
+npm ci
 npm run dev
-# o
-yarn run dev
 ```
 
-✅ Esto normalmente iniciará un servidor en `http://localhost:5173`.
+Vite usa `http://localhost:8000` desde `.env.development`. El build productivo usa
+la URL de Render definida en `.env.production`.
 
----
+## Verificación
 
-##  🧬 Flujo completo
+```powershell
+cd backend
+.\.venv\Scripts\python -m unittest discover -s tests -v
+.\.venv\Scripts\python -m compileall -q app tests
 
-1. En una terminal: corre el **backend**.
-2. En otra terminal: corre el **frontend**.
-3. Abre el navegador en `http://localhost:5173` (o el puerto configurado).
-4. Interactúa con la aplicación, que se comunica con el backend.
+cd ../frontend/client
+npm run lint
+npm run build
+npm audit
+```
 
----
+## Producción
 
+El blueprint raíz `render.yaml` define ambos servicios. Configura en Render:
 
+- `ORACLE_USER`, `ORACLE_PASSWORD` y `ORACLE_DSN` si se habilitan cuentas.
+- `JWT_SECRET_KEY` se genera automáticamente por el blueprint.
 
-
+Nunca confirmes `.env` en Git. Si una credencial fue versionada, debe rotarse;
+eliminar el archivo de un commit posterior no invalida el secreto anterior.

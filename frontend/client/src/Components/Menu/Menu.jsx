@@ -1,5 +1,4 @@
 import styles from './Menu.module.css';
-import axios from 'axios';
 import { Link } from 'react-router';
 import flags from '../../utils/flags';
 import { useState } from 'react';
@@ -8,39 +7,58 @@ function Menu() {
 
 const [selectedIndex, setSelectedIndex] = useState(0);
 
-//Envia el lenguaje seleccionado al backend
-async function handleLanguage(e)   {
-    await axios.get(`https://wordle-fbkx.onrender.com/idioma/${e}`)
-  ;
+
+
+function handleLanguage(language) {
+    localStorage.setItem('wordle_language', language);
 }
 
 const previousFlag = () => {
- setSelectedIndex((prev) => (prev - 1 + flags.length) % flags.length);
+    
+    if(selectedIndex == 0){
+        setSelectedIndex(flags.length -1);
+    } else {
+        setSelectedIndex(selectedIndex -1);
+    }
 }
 
 const nextFlag = () => {
- setSelectedIndex((prevIndex) => (prevIndex + 1) % flags.length);   
+    
+    if(selectedIndex == flags.length -1){
+        setSelectedIndex(0);
+    } else {
+        setSelectedIndex(selectedIndex +1);
+    }
+
+    
 }
 
 
   return <main className={styles.mainContainer}>
 
-          <h2 className={styles.tittle}>SELECCIONE EL IDIOMA </h2>
-      
-            <div className={styles.menuContainer}>
-                <button className={styles.leftArrow} onClick={() => previousFlag()} ></button>
-                    <Link to={'/home'} className={styles.idiom} onClick={(e) => handleLanguage(flags[selectedIndex].code)} >  
-                        <img src={flags[selectedIndex].img} />    
-                    </Link>
-                <button className={styles.rightArrow} onClick={() => nextFlag()} ></button>
-            </div>
+      <h2 className={styles.tittle}>SELECCIONE EL IDIOMA </h2>
 
-            <div className={styles.authRow}>
-              <Link className={styles.authBtn} to={"/login"}>Iniciar sesión</Link>
-            </div>
-  
-      </main>  
+    <div className={styles.menuContainer}>
+
+    <button className={styles.leftArrow} onClick={() => previousFlag()} ></button>
+
+      <Link to={'/home'} className={styles.idiom} onClick={() => handleLanguage(flags[selectedIndex].code)}>
+        <img src={flags[selectedIndex].img} alt={`Idioma ${flags[selectedIndex].code}`} />
+      </Link>
     
+    <button className={styles.rightArrow} onClick={() => nextFlag()} ></button>
+
+    </div>
+
+    <div className={styles.authRow}>
+      <Link className={styles.authBtn} to={"/login"}>
+        Iniciar sesión
+      </Link>
+    </div>
+    
+    
+  </main>
+  
 }
 
 export default Menu;

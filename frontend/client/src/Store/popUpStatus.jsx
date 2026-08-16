@@ -9,6 +9,7 @@ const usePopUpStatus = create((set) => ({
     setMessage: (newValue) => set({message: newValue}),
     setTryes: (newValue) => set({tryes: newValue}),
     setScore: (newValue) => set({score: newValue}),
+    Reset: () => set({popUpStatus: false, message: "", tryes: 0, score: 0}),
 }))
 
 export default usePopUpStatus;

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import styles from "./Login.module.css";
 
+const apiBaseUrl = import.meta.env.VITE_API_URL;
+
 
 export default function Login() {
     const navigate = useNavigate();
@@ -26,7 +28,7 @@ export default function Login() {
     }
 
     async function handleSubmit(e) {
-       /* e.preventDefault();
+        e.preventDefault();
         resetMessages();
 
         const u = username.trim();
@@ -80,7 +82,7 @@ export default function Login() {
         } finally {
             setLoading(false);
         }
- */   }
+    }
 
     return (
         <main className={styles.screen}>
@@ -116,7 +118,7 @@ export default function Login() {
 
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <label className={styles.label}>
-                        Email
+                        Nombre de usuario
                         <input
                             className={styles.input}
                             value={username}
@@ -125,19 +127,6 @@ export default function Login() {
                             disabled={loading}
                         />
                     </label>
-
-                    {mode === "register" ? (
-                        <label className={styles.label}>
-                            Nombre de usuario
-                            <input
-                                className={styles.input}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                autoComplete="new-password"
-                                disabled={loading}
-                            />
-                        </label>
-                    ) : null}
 
                     <label className={styles.label}>
                         Contraseña

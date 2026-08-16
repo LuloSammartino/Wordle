@@ -1,17 +1,22 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from passlib.context import CryptContext
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 from jose import JWTError, jwt
 import json
-from .database import get_db_connection, init_db_pool
-import oracledb
+import logging
+import os
+import secrets
+from .database import get_db_connection
 
 router = APIRouter()
 
 # Configuración JWT
-SECRET_KEY = "supersecreto"   # en producción: usar os.environ
+logger = logging.getLogger(__name__)
+SECRET_KEY = os.getenv("JWT_SECRET_KEY") or secrets.token_urlsafe(32)
+if "JWT_SECRET_KEY" not in os.environ:
+    logger.warning("JWT_SECRET_KEY no está configurada; los tokens se invalidarán al reiniciar")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -19,17 +24,14 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
 class UserRegister(BaseModel):
-    username: str
-    password: str
+    username: str = Field(min_length=3, max_length=50, pattern=r"^[A-Za-z0-9_.-]+$")
+    password: str = Field(min_length=8, max_length=72)
 
-class UserData(BaseModel):
-    score: int = 0
-    words: list[str] = []
-
-class WordProgress(BaseModel):
-    palabra_completada: str
-    intentos: int
-    score: int
+class UpdateProgressRequest(BaseModel):
+    score: int = Field(ge=0, le=1_000_000)
+    word: str = Field(min_length=3, max_length=32)
+    intentos: int = Field(ge=1, le=20)
+    letras: dict[str, int]
 
 # Funciones auxiliares
 def get_password_hash(password):
@@ -40,7 +42,7 @@ def verify_password(plain, hashed):
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -99,10 +101,11 @@ def register_user(user: UserRegister):
         return {"message": "Usuario registrado exitosamente"}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al registrar usuario")
-    with:
+        logger.exception("Error al registrar usuario")
+        raise HTTPException(status_code=500, detail="No se pudo registrar el usuario")
+    finally:
         conn.close()
 
 # Login
@@ -123,18 +126,19 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
         user_id, username, password_hash = result
         
         if not verify_password(form_data.password, password_hash):
-        raise HTTPException(status_code=401, detail="Credenciales inválidas")
+            raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    token = create_access_token(
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token = create_access_token(
             data={"sub": username},
-        expires_delta=access_token_expires
-    )
+            expires_delta=access_token_expires
+        )
         return {"access_token": token, "token_type": "bearer", "user_id": user_id}
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error en login: {str(e)}")
+    except Exception:
+        logger.exception("Error durante el login")
+        raise HTTPException(status_code=500, detail="No se pudo iniciar sesión")
     finally:
         conn.close()
 
@@ -164,8 +168,9 @@ def get_progress(current_user=Depends(get_current_user)):
             "score": score_total,
             "words": palabras
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener progreso: {str(e)}")
+    except Exception:
+        logger.exception("Error al obtener progreso")
+        raise HTTPException(status_code=500, detail="No se pudo obtener el progreso")
     finally:
         conn.close()
 
@@ -183,7 +188,7 @@ def update_progress(
         fecha_actual = date.today()
         
         # Extraer datos del request
-        score = progress_data.score
+        score = max(0, (6 - progress_data.intentos) * 20)
         word = progress_data.word
         intentos = progress_data.intentos
         letras = progress_data.letras
@@ -214,20 +219,28 @@ def update_progress(
             "letras_json": letras_json
         })
         
+        cursor.execute(
+            "SELECT progreso_id FROM progreso_diario WHERE user_id = :user_id AND fecha = :fecha",
+            {"user_id": user_id, "fecha": fecha_actual}
+        )
+        progreso_id = cursor.fetchone()[0]
+        cursor.execute(
+            "DELETE FROM estadisticas_letras WHERE palabra_id = :progreso_id",
+            {"progreso_id": progreso_id}
+        )
+
         # Guardar estadísticas de letras individuales
         for letra, estado in letras.items():
             if isinstance(estado, int) and estado in [0, 1, 2]:
                 cursor.execute("""
                     INSERT INTO estadisticas_letras (user_id, letra, estado, fecha, palabra_id)
-                    VALUES (:user_id, :letra, :estado, :fecha, 
-                        (SELECT progreso_id FROM progreso_diario 
-                         WHERE user_id = :user_id AND fecha = :fecha)
-                    )
+                    VALUES (:user_id, :letra, :estado, :fecha, :progreso_id)
                 """, {
                     "user_id": user_id,
                     "letra": letra.upper(),
                     "estado": estado,
-                    "fecha": fecha_actual
+                    "fecha": fecha_actual,
+                    "progreso_id": progreso_id
                 })
         
         conn.commit()
@@ -252,12 +265,89 @@ def update_progress(
                 "words": palabras
             }
         }
-    except Exception as e:
+    except Exception:
         conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al actualizar progreso: {str(e)}")
+        logger.exception("Error al actualizar progreso")
+        raise HTTPException(status_code=500, detail="No se pudo actualizar el progreso")
     finally:
         conn.close()
 
+# Obtener letras completadas por día
+@router.get("/progress/letters/{fecha}")
+def get_letters_by_date(fecha: str, current_user=Depends(get_current_user)):
+    """Obtiene las letras completadas en una fecha específica"""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        user_id = current_user["user_id"]
+        
+        # Convertir string de fecha a date
+        fecha_obj = datetime.strptime(fecha, "%Y-%m-%d").date()
+        
+        cursor.execute("""
+            SELECT letras_completadas, palabra_completada, intentos
+            FROM progreso_diario
+            WHERE user_id = :user_id AND fecha = :fecha
+        """, {"user_id": user_id, "fecha": fecha_obj})
+        
+        result = cursor.fetchone()
+        if not result:
+            return {"message": "No hay progreso para esta fecha", "letras": {}, "palabra": None}
+        
+        letras_json = result[0]
+        palabra = result[1]
+        intentos = result[2]
+        
+        letras = json.loads(letras_json) if letras_json else {}
+        
+        return {
+            "fecha": fecha,
+            "palabra_completada": palabra,
+            "intentos": intentos,
+            "letras": letras
+        }
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Formato de fecha inválido. Use YYYY-MM-DD")
+    except Exception:
+        logger.exception("Error al obtener letras")
+        raise HTTPException(status_code=500, detail="No se pudieron obtener las letras")
+    finally:
+        conn.close()
 
-
-
+# Obtener estadísticas de letras
+@router.get("/statistics/letters")
+def get_letter_statistics(current_user=Depends(get_current_user)):
+    """Obtiene estadísticas de uso de letras del usuario"""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        user_id = current_user["user_id"]
+        
+        cursor.execute("""
+            SELECT letra, estado, COUNT(*) as cantidad
+            FROM estadisticas_letras
+            WHERE user_id = :user_id
+            GROUP BY letra, estado
+            ORDER BY letra, estado
+        """, {"user_id": user_id})
+        
+        results = cursor.fetchall()
+        estadisticas = {}
+        
+        for letra, estado, cantidad in results:
+            if letra not in estadisticas:
+                estadisticas[letra] = {"correcta": 0, "parcial": 0, "incorrecta": 0}
+            
+            if estado == 2:
+                estadisticas[letra]["correcta"] = cantidad
+            elif estado == 1:
+                estadisticas[letra]["parcial"] = cantidad
+            else:
+                estadisticas[letra]["incorrecta"] = cantidad
+        
+        return {"estadisticas": estadisticas}
+    except Exception:
+        logger.exception("Error al obtener estadísticas")
+        raise HTTPException(status_code=500, detail="No se pudieron obtener las estadísticas")
+    finally:
+        conn.close()

@@ -1,45 +1,48 @@
-import styles from './Keyboard.module.css';
-import useLetters from '../../Store/lettersStatus';
+import styles from "./Keyboard.module.css";
+import useLetters from "../../Store/lettersStatus";
 
-
-const letters = [
-    ['Q','W','E','R','T','Y','U','I','O','P'],
-    ['A','S','D','F','G','H','J','K','L'],
-    ['Z','X','C','V','B','N','M']
+const rows = [
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ñ"],
+    ["Enter", "Z", "X", "C", "V", "B", "N", "M", "Backspace"],
 ];
 
-// Funcion que devuelve un className de estilado para pintar las palabras del teclado de verde/amarillo/rojo segun corresponda
-// Busca en el estado global de letters que numero le corresponde a la letra
-const handleKeyColors = (e) => {
-    let letter = e.toLowerCase()
-    const lettersStatus = useLetters(state => state.letters)
+function Keyboard({ disabled = false }) {
+    const lettersStatus = useLetters((state) => state.letters);
 
-    if(lettersStatus[letter] == 2)
-        return styles.right;
-    if(lettersStatus[letter] == 1)
-        return styles.almostRight;
-    if(lettersStatus[letter] == 0)
-        return styles.wrong;
+    const colorClass = (letter) => {
+        const state = lettersStatus[letter.toLowerCase()];
+        if (state === 2) return styles.right;
+        if (state === 1) return styles.almostRight;
+        if (state === 0) return styles.wrong;
+        return "";
+    };
 
-    
-}
+    const pressKey = (key) => {
+        const target = document.activeElement;
+        target?.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+    };
 
-
-
-function Keyboard()  {
     return (
-        <main className={styles.keyboard}>
-            {letters.map((row, rowIndex) => (
+        <div className={styles.keyboard} aria-label="Teclado virtual">
+            {rows.map((row, rowIndex) => (
                 <div key={rowIndex} className={styles.keyboardRow}>
                     {row.map((letter) => (
-                        <button key={letter} className={`${styles.key}
-                        ${handleKeyColors(letter)}`}>
-                            {letter}
+                        <button
+                            type="button"
+                            key={letter}
+                            className={`${styles.key} ${colorClass(letter)}`}
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => pressKey(letter)}
+                            disabled={disabled}
+                            aria-label={letter === "Backspace" ? "Borrar" : letter}
+                        >
+                            {letter === "Backspace" ? "⌫" : letter}
                         </button>
                     ))}
                 </div>
             ))}
-        </main>
+        </div>
     );
 }
 

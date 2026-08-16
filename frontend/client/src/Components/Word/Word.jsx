@@ -1,167 +1,150 @@
-import styles from './Word.module.css';
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { animate } from 'animejs';
-import axios from 'axios';
-import useActiveWordStore from '../../Store/activeWord';
-import useLetters from '../../Store/lettersStatus';
-import usePopUpStatus from '../../Store/popUpStatus';
+import { createRef, useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { animate } from "animejs";
 
+import styles from "./Word.module.css";
+import useActiveWordStore from "../../Store/activeWord";
+import useCorrectWordStore from "../../Store/correctWord";
+import useLetters from "../../Store/lettersStatus";
+import usePopUpStatus from "../../Store/popUpStatus";
 
-    //Funcion que devuelve el estilo correcto depende el estado de la letra,
-    //El array se define fuera de la funcion para que no se cree con cada ejecucion
-    const colors = [styles.incorrect, styles.halfCorrect, styles.correct];
-    function handleResultColors(e) {
-         return colors[e] ?? styles.default;
+const apiBaseUrl = import.meta.env.VITE_API_URL;
+
+function Word({ index, size, gameId }) {
+    const activeWord = useActiveWordStore((state) => state.activeWord);
+    const nextWord = useActiveWordStore((state) => state.Next);
+    const setLetters = useLetters((state) => state.SetLetters);
+    const setCorrectWord = useCorrectWordStore((state) => state.SetNewCorrect);
+    const setPopUpStatus = usePopUpStatus((state) => state.setPopUpStauts);
+    const setMessage = usePopUpStatus((state) => state.setMessage);
+    const setTryes = usePopUpStatus((state) => state.setTryes);
+    const [actualLetter, setActualLetter] = useState(0);
+    const [result, setResult] = useState([]);
+    const [letters, setLettersState] = useState(() => Array(size).fill(""));
+    const [submitting, setSubmitting] = useState(false);
+    const letterRefs = useRef([]);
+    const rowRef = useRef(null);
+
+    if (letterRefs.current.length !== size) {
+        letterRefs.current = Array.from(
+            { length: size },
+            (_, position) => letterRefs.current[position] ?? createRef(),
+        );
     }
 
-
-function Word({ index }) {
-    
-    // Store 
-    const activeWord = useActiveWordStore(state => state.activeWord)
-    const nextWord = useActiveWordStore(state => state.Next)
-    const setPopUpStatus = usePopUpStatus(state => state.setPopUpStauts)
-    const setLetters = useLetters(state => state.SetLetters)
-    const setMessage = usePopUpStatus(state => state.setMessage)
-    const setTryes = usePopUpStatus(state => state.setTryes)
-
-    // Local Store
-    const [actualLetter, setActualLetter] = useState(0)
-    const [result, setResult] = useState([])
-    const [letters, setLettersState] = useState(["", "", "", "", ""])
-
-    const letterRefs = [useRef(), useRef(), useRef(), useRef(), useRef()]
-    const rowRef = useRef(null)
-
-    const isActive = activeWord === index;
-    
     useEffect(() => {
-        if (isActive && rowRef.current) {
-            rowRef.current.focus();
-        }
-    }, [activeWord])
+        setLettersState(Array(size).fill(""));
+        setActualLetter(0);
+        setResult([]);
+    }, [gameId, size]);
 
-    const handlePopUp = (message, tryes) => {
-        setTimeout(() => { setPopUpStatus(true) }, 500);
+    useEffect(() => {
+        if (activeWord === index) rowRef.current?.focus();
+    }, [activeWord, index]);
 
-        setMessage(message)
-        setTryes(tryes)
-    }
+    const shake = () => animate(
+        letterRefs.current.map((ref) => ref.current),
+        { translateX: [0, 10, -10, 10, -10, 0], duration: 500 },
+    );
 
-    const shakeAnimation = useCallback(() => {
-        animate(letterRefs.current, {
-            translateX: [0, 10, -10, 10, -10, 0],
-            duration: 500,
-            easing: 'easeInOutSine'
-        });
-    }, []);
+    const submitWord = async () => {
+        if (!gameId || submitting) return;
+        setSubmitting(true);
+        try {
+            const response = await axios.post(`${apiBaseUrl}/games/${gameId}/attempts`, {
+                word: letters.join(""),
+            });
+            const data = response.data;
+            setResult(data.result);
+            setLetters(data.letters);
 
-    const handleWord = async (word) => {
-
-       try {
-            const { data } = await axios.get(`https://wordle-fbkx.onrender.com/intento/${word}`);
-            
-            setResult(data.resultado);
-            setLettersGlobal(data.letras);
-            nextWord();
-
-            const isWin = data.resultado.every(val => val === 2);
-            if (isWin) {
-                handlePopUp("¡GANASTE!", data.intentos);
-            } else if (data.intentos === 5) {
-                handlePopUp("¡PERDISTE!", data.intentos);
+            if (data.status === "playing") {
+                nextWord();
+            } else {
+                setCorrectWord(data.correct_word);
+                setMessage(data.status === "won" ? "¡GANASTE!" : "¡PERDISTE!");
+                setTryes(data.attempts);
+                setTimeout(() => setPopUpStatus(true), 500);
             }
-        } catch (err) {
-            shakeAnimation();
+        } catch {
+            shake();
+        } finally {
+            setSubmitting(false);
         }
-
-    }
-
-    function validateWord(array) {
-        return array.every(l => l && l.trim() !== "")
-    }
-
-    const handleKeyDown = (e) => {
-
-        if (!isActive) return;
-
-        switch (e.key) {
-            // letras A-Z
-            default:
-                if (e.key.length === 1 && e.key.match(/^[a-zA-Z]$/)) {
-                    const newLetters = [...letters];
-                    newLetters[actualLetter] = e.key.toUpperCase();
-                    setLettersState(newLetters);
-                    if (actualLetter < 4) {
-                        setActualLetter(actualLetter + 1);
-                    }
-                }
-                break;
-            case "Enter":
-                validateWord(letters) ?
-                    handleWord(letters.join('')) :
-                    animate(letterRefs.map(ref => ref.current), { translateX: [0, 10, -10, 10, -10, 0], duration: 500 });
-                break;
-            case "Backspace":
-                e.preventDefault();
-                const newLetters = [...letters];
-                if (newLetters[actualLetter]) {
-                    newLetters[actualLetter] = "";
-                    setLettersState(newLetters);
-                } else if (actualLetter > 0) {
-                    newLetters[actualLetter - 1] = "";
-                    setLettersState(newLetters);
-                    setActualLetter(actualLetter - 1);
-                }
-                break;
-            case " ":
-                e.preventDefault();
-                actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""
-                break;
-            case "ArrowLeft":
-                e.preventDefault();
-                actualLetter != 0 ? setActualLetter(actualLetter - 1) : ""
-                break;
-            case "ArrowRight":
-                actualLetter < 4 ? setActualLetter(actualLetter + 1) : ""
-                break;
-        }
-
     };
 
+    const handleKeyDown = (event) => {
+        if (activeWord !== index || submitting || result.length) return;
 
+        if (event.key === "Enter") {
+            if (letters.every(Boolean)) submitWord();
+            else shake();
+            return;
+        }
+
+        if (event.key === "Backspace") {
+            event.preventDefault();
+            const nextLetters = [...letters];
+            if (nextLetters[actualLetter]) nextLetters[actualLetter] = "";
+            else if (actualLetter > 0) {
+                nextLetters[actualLetter - 1] = "";
+                setActualLetter(actualLetter - 1);
+            }
+            setLettersState(nextLetters);
+            return;
+        }
+
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+            const direction = event.key === "ArrowLeft" ? -1 : 1;
+            setActualLetter((position) => Math.max(0, Math.min(size - 1, position + direction)));
+            return;
+        }
+
+        if (/^\p{L}$/u.test(event.key)) {
+            const nextLetters = [...letters];
+            nextLetters[actualLetter] = event.key.toUpperCase();
+            setLettersState(nextLetters);
+            setActualLetter((position) => Math.min(size - 1, position + 1));
+        }
+    };
+
+    const colorClass = (state) => {
+        if (state === 2) return styles.correct;
+        if (state === 1) return styles.halfCorrect;
+        if (state === 0) return styles.incorrect;
+        return "";
+    };
 
     return (
-        <main
+        <div
             className={styles.word}
-            tabIndex={isActive ? 0 : -1}
+            tabIndex={activeWord === index ? 0 : -1}
             onKeyDown={handleKeyDown}
             ref={rowRef}
+            role="group"
+            aria-label={`Intento ${index + 1}`}
         >
-
-            {letterRefs.map((ref, i) => (
-
+            {letterRefs.current.map((ref, position) => (
                 <div
-                    key={i}
+                    key={position}
                     ref={ref}
-                    className={`${styles.letter} 
-                        ${(actualLetter === i && isActive) ? styles.active : ""}
-                        ${letters[i] ? styles.filled : ""}
-                        ${result.length ? handleResultColors(result[i]) : ""}`
-                    }
+                    className={`${styles.letter}
+                        ${actualLetter === position && activeWord === index ? styles.active : ""}
+                        ${letters[position] ? styles.filled : ""}
+                        ${result.length ? colorClass(result[position]) : ""}`}
                     onClick={() => {
-                        if (isActive) {
-                            setActualLetter(i);
-                            rowRef.current && rowRef.current.focus();
+                        if (activeWord === index) {
+                            setActualLetter(position);
+                            rowRef.current?.focus();
                         }
                     }}
                 >
-                    {letters[i]}
+                    {letters[position]}
                 </div>
             ))}
-
-        </main>
-    )
+        </div>
+    );
 }
 
-export default Word
+export default Word;

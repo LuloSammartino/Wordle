@@ -1,170 +1,165 @@
+from __future__ import annotations
+
+from contextlib import asynccontextmanager
+from functools import lru_cache
+import logging
+import random
+import threading
+import time
+import unicodedata
+from uuid import uuid4
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from spellchecker import SpellChecker
-import random as rm
-from typing import Literal
-import unicodedata
-from .database import init_db_pool, close_db_pool
+
+from .database import close_db_pool, init_db_pool
 from .register import router as user_router
 
-app = FastAPI()
+logger = logging.getLogger(__name__)
+SUPPORTED_LANGUAGES = {"en", "es", "fr", "pt", "de", "it", "ru", "ar", "nl"}
+MAX_ATTEMPTS = 5
+GAME_TTL_SECONDS = 4 * 60 * 60
+games: dict[str, "Game"] = {}
+games_lock = threading.Lock()
 
-# Incluir router de usuarios
-app.include_router(user_router, prefix="/user", tags=["users"])
 
-app.add_middleware(            # esto hay que revisarlo para producción
-    CORSMiddleware,
-    allow_origins=["https://wordle-front-y7gp.onrender.com/"],  # dominio del frontend
-    allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"],  
-)
+class NewGameRequest(BaseModel):
+    language: str = "es"
+    length: int = Field(default=5, ge=3, le=16)
 
-@app.get("/ok")
-async def ok():
-    return {"message": "ok"}
 
-class Palabra(BaseModel):
-    palabra: str
+class AttemptRequest(BaseModel):
+    word: str = Field(min_length=1, max_length=32)
 
-def quitar_acentos(palabra):
-    return ''.join(c for c in unicodedata.normalize('NFD', palabra)
-                if unicodedata.category(c) != 'Mn')
 
-palabra_correcta = "arbol"
-idioma_actual = "es"       
-largo_actual = 5
-intentos = 0
-letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"n":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
+class Game:
+    def __init__(self, answer: str, language: str):
+        self.answer = answer
+        self.language = language
+        self.attempts = 0
+        self.finished = False
+        self.letters: dict[str, int] = {}
+        self.created_at = time.monotonic()
 
-palabras = list(SpellChecker(language=idioma_actual).word_frequency.words())
-palabras = [quitar_acentos(p) for p in palabras] # averiguar como sacar los tildes pero no las ñ
 
-@app.get("/idioma/{idioma}")
-async def cambiar_idioma(idioma: Literal["en","es","fr","pt","de","it","ru","ar","eu","lv","nl","fa"]):
-    """ Cambia el idioma del diccionario """
-    global idioma_actual, palabras
-    idioma_actual = idioma
-    palabras = list(SpellChecker(language=idioma).word_frequency.words())
-    palabras = [quitar_acentos(p) for p in palabras]
-    return {"mensaje": f"Idioma cambiado a {idioma}"}
+def normalize_word(word: str) -> str:
+    """Lowercase and remove accents while preserving Spanish ñ."""
+    word = word.strip().lower().replace("ñ", "\0")
+    word = "".join(
+        char
+        for char in unicodedata.normalize("NFD", word)
+        if unicodedata.category(char) != "Mn"
+    )
+    return word.replace("\0", "ñ")
 
-def new_game():
-    """Inicia un nuevo juego"""
-    global palabra_correcta, largo_actual, intentos, letras
-    palabra_correcta = rm.choice([p for p in palabras if len(p) == 5 and p.isalpha()])
-    largo_actual = 5
-    intentos = 0
-    letras = {"a":4,"b":4,"c":4,"d":4,"e":4,"f":4,"g":4,"h":4,"i":4,"j":4,"k":4,"l":4,"m":4,"n":4,"ñ":4,"o":4,"p":4,"q":4,"r":4,"s":4,"t":4,"u":4,"v":4,"w":4,"x":4,"y":4,"z":4}
 
-@app.on_event("startup")
-def startup_event():
-    """ Evento que se ejecuta al iniciar la aplicación """
-    # Inicializar pool de conexiones a Oracle
+@lru_cache(maxsize=len(SUPPORTED_LANGUAGES))
+def words_for(language: str) -> tuple[str, ...]:
+    words = {
+        normalize_word(word)
+        for word in SpellChecker(language=language).word_frequency.words()
+    }
+    return tuple(word for word in words if word.isalpha())
+
+
+def evaluate(answer: str, attempt: str) -> list[int]:
+    result = [0] * len(answer)
+    remaining = list(answer)
+
+    for index, letter in enumerate(attempt):
+        if letter == answer[index]:
+            result[index] = 2
+            remaining[index] = ""
+
+    for index, letter in enumerate(attempt):
+        if result[index] == 0 and letter in remaining:
+            result[index] = 1
+            remaining[remaining.index(letter)] = ""
+
+    return result
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
     try:
         init_db_pool()
-    except Exception as e:
-        print(f"⚠️ Advertencia: No se pudo conectar a Oracle Database: {e}")
-        print("⚠️ La aplicación continuará sin base de datos (modo fallback)")
-    new_game()
-
-@app.on_event("shutdown")
-def shutdown_event():
-    """ Evento que se ejecuta al cerrar la aplicación """
+    except Exception as exc:
+        logger.warning("Oracle no disponible; el juego anónimo seguirá funcionando: %s", exc)
+    yield
     close_db_pool()
 
-@app.get("/reset")
-def reset_game():
-    """Resetea la partida"""
-    new_game()
-    return {"palabra_correcta": palabra_correcta,
-            "largo_actual": largo_actual,
-            "message": "Nuevo juego iniciado"}
 
-@app.get("/correcta")
-async def mostrar_palabra_correcta():
-    """ Muestra la palabra correcta actual y su largo """
-    return {"palabra_correcta": palabra_correcta,
-            "largo_actual": largo_actual}
-
-@app.post("/set_palabra")
-async def correcta(correcta:Palabra):
-    """ Establece la palabra correcta """
-    global palabra_correcta, largo_actual
-    palabra_correcta = correcta.palabra.lower()
-    largo_actual = len(palabra_correcta)
-    palabras.append(palabra_correcta)
-    return {"mensaje": f"Palabra correcta actualizada a '{palabra_correcta}'"}
-
-@app.get("/set_palabra/random")    
-async def palabra_random(largo:int | None = largo_actual):
-    """ Establece una palabra correcta aleatoria de un largo dado (o el actual si no se da) """
-    global palabra_correcta, largo_actual, palabras
-    if largo:
-        posibles_palabras = [p for p in palabras if len(p) == largo and p.isalpha()]
-        if len(posibles_palabras)<1:
-            return{"mensaje": f"No existen palabras en pyspellchecker de largo {largo}"}    # esto por ahora no pasa (elige entre 1 y 16)
-    palabra_correcta = rm.choice(posibles_palabras)
-    largo_actual = len(palabra_correcta)
-    return {"palabra_correcta": palabra_correcta,
-            "largo_actual": largo_actual}
-
-@app.get("/intento/{intento}")
-async def evaluar_intento(intento:str):
-    """ Evalua un intento y devuelve el resultado """
-    global intentos, letras
-    intento = intento.lower()
-    resultado = []
-    if intento not in palabras:
-        raise HTTPException(status_code=404, detail = "La palabra debe estar en spellchecker")
-    else: 
-        borrador = list(palabra_correcta)
-        for i, letra in enumerate(intento):
-            if letra == palabra_correcta[i]:
-                resultado.append(2)  # letra correcta en lugar correcto
-                letras[letra] = 2
-                borrador.remove(letra)  
-            else:
-                resultado.append(0)
-        
-        for i, letra in enumerate(intento):
-            if resultado[i] == 2:
-                continue
-            elif resultado[i] == 0:
-                if letra in borrador:
-                    resultado[i] = 1   # letra en palabra pero lugar incorrecto
-                    if letras[letra] == 2:
-                        pass
-                    else:
-                        letras[letra] = 1
-                    borrador.remove(letra)
-                else:
-                    letras[letra] = 0
-                    continue  # letra no esta en la palabra
-        
-        intentos += 1
-        return {"resultado": resultado,
-                "letras": letras,
-                "intentos": intentos}
+app = FastAPI(title="WORLDE API", lifespan=lifespan)
+app.include_router(user_router, prefix="/user", tags=["users"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://wordle-front-y7gp.onrender.com",
+        "https://wordle-front.onrender.com",
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "Content-Type"],
+)
 
 
-@app.get("/palabras/")
-async def validas(validas: bool = True, largo: int | None = None):
-    """ Devuelve las palabras válidas (o todas) de un largo dado (o el actual si no se da) """
-    if not largo:
-        if validas:
-            palabras_validas = [p for p in palabras if len(p) == largo_actual and p.isalpha()]
-            return {"palabras_validas": palabras_validas}
-        else: 
-            return {"palabras": palabras}
-    else:
-        palabras_largo = [p for p in palabras if len(p) == largo and p.isalpha()]
-        return {"palabras_largo": palabras_largo}
+@app.get("/ok")
+def ok():
+    return {"message": "ok"}
 
 
-@app.get("/palabra/{palabra}")
-async def chequeo(palabra:str):   
-    letras = [letra for letra in palabra]
-    return {"letras": letras}
+@app.post("/games", status_code=201)
+def create_game(request: NewGameRequest):
+    language = request.language.lower()
+    if language not in SUPPORTED_LANGUAGES:
+        raise HTTPException(status_code=422, detail="Idioma no soportado")
 
+    candidates = [word for word in words_for(language) if len(word) == request.length]
+    if not candidates:
+        raise HTTPException(status_code=422, detail="No hay palabras para ese idioma y longitud")
+
+    game_id = uuid4().hex
+    with games_lock:
+        cutoff = time.monotonic() - GAME_TTL_SECONDS
+        for expired_id in [key for key, game in games.items() if game.created_at < cutoff]:
+            del games[expired_id]
+        games[game_id] = Game(random.choice(candidates), language)
+
+    return {"game_id": game_id, "length": request.length, "max_attempts": MAX_ATTEMPTS}
+
+
+@app.post("/games/{game_id}/attempts")
+def submit_attempt(game_id: str, request: AttemptRequest):
+    attempt = normalize_word(request.word)
+
+    with games_lock:
+        game = games.get(game_id)
+        if game is None:
+            raise HTTPException(status_code=404, detail="Partida no encontrada")
+        if game.finished:
+            raise HTTPException(status_code=409, detail="La partida ya terminó")
+        if len(attempt) != len(game.answer):
+            raise HTTPException(status_code=422, detail="La palabra tiene un largo incorrecto")
+        if attempt not in words_for(game.language):
+            raise HTTPException(status_code=422, detail="La palabra no está en el diccionario")
+
+        result = evaluate(game.answer, attempt)
+        game.attempts += 1
+        for letter, state in zip(attempt, result):
+            game.letters[letter] = max(game.letters.get(letter, -1), state)
+
+        won = all(state == 2 for state in result)
+        game.finished = won or game.attempts >= MAX_ATTEMPTS
+        status = "won" if won else "lost" if game.finished else "playing"
+        response = {
+            "result": result,
+            "letters": game.letters,
+            "attempts": game.attempts,
+            "status": status,
+        }
+        if game.finished:
+            response["correct_word"] = game.answer
+        return response
