@@ -50,11 +50,6 @@ const nextFlag = () => {
 
     </div>
 
-    <div className={styles.authRow}>
-      <Link className={styles.authBtn} to={"/login"}>
-        Iniciar sesión
-      </Link>
-    </div>
     
     
   </main>
