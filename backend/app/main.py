@@ -97,6 +97,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "http://localhost:5174",
         "https://wordle-front-y7gp.onrender.com",
         "https://wordle-front.onrender.com",
     ],

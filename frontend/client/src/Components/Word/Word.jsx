@@ -119,6 +119,7 @@ function Word({ index, size, gameId }) {
     return (
         <div
             className={styles.word}
+            style={{ "--word-length": size }}
             tabIndex={activeWord === index ? 0 : -1}
             onKeyDown={handleKeyDown}
             ref={rowRef}

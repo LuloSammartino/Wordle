@@ -15,7 +15,8 @@ const apiBaseUrl = import.meta.env.VITE_API_URL;
 const MAX_ATTEMPTS = 5;
 
 function App() {
-  const [actualSize, setActualSize] = useState(5);
+  // const [actualSize, setActualSize] = useState(5);
+  const actualSize = 5;
   const [gameId, setGameId] = useState("");
   const [second, setSeconds] = useState(0);
   const [error, setError] = useState("");
@@ -63,6 +64,7 @@ function App() {
       </header>
 
       <section className={styles.content}>
+        {/* Selector de dificultad desactivado temporalmente para el portfolio.
         <label>
           Dificultad
           <select
@@ -76,6 +78,7 @@ function App() {
             <option value={7}>Muy difícil · 7 letras</option>
           </select>
         </label>
+        */}
 
         {error ? (
           <p role="alert">
@@ -84,7 +87,10 @@ function App() {
         ) : null}
         {!gameId && !error ? <p>Preparando partida…</p> : null}
 
-        <div className={styles.wordsContainer}>
+        <div
+          className={styles.wordsContainer}
+          style={{ maxWidth: `${actualSize * 72}px` }}
+        >
           {Array.from({ length: MAX_ATTEMPTS }, (_, index) => (
             <Word key={`${gameId}-${index}`} index={index} size={actualSize} gameId={gameId} />
           ))}

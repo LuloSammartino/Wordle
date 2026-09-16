@@ -12,7 +12,6 @@ const PopUp = ({ time, onRestart }) => {
     const tryes = usePopUpStatus(state => state.tryes)
     const minuts = Math.floor(time / 60);
     const seconds = time % 60;
-    const score = message === "¡GANASTE!" ? Math.max(0, (6 - tryes) * 20) : 0;
 
     const gif = useMemo(() => {
         const n = Math.floor(Math.random() * 3);
@@ -22,7 +21,7 @@ const PopUp = ({ time, onRestart }) => {
 
 
     return (
-        <div className={styles.popupContainer}>
+        <main className={styles.popupContainer}>
             <div className={styles.crossContainer}>
                 <button onClick={onRestart} className={styles.cross} aria-label="Cerrar y jugar de nuevo">X</button>
             </div>
@@ -32,17 +31,16 @@ const PopUp = ({ time, onRestart }) => {
 
 
             <h3>La palabra era:</h3>
-            <p>{correctWord.toUpperCase()}</p>
+            <h3 className={styles.correctWord}>{correctWord.toUpperCase()}</h3>
 
             <h5>intentos: {tryes}</h5>
             <h5>Tiempo: {minuts}:{String(seconds).padStart(2, "0")}</h5>
-            <h5>Score: {score}</h5>
 
             <section className={styles.buttonContainer}>
                 <button onClick={onRestart}>Jugar de nuevo</button>
             </section>
 
-        </div>
+        </main>
     )
 }
 
