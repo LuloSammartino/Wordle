@@ -22,9 +22,15 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-El juego anónimo funciona aunque Oracle no esté configurado. Para cuentas, copia
-`../.env.example` como `backend/.env`, completa las variables Oracle y ejecuta
-`backend/app/schema.sql` en la base.
+El juego anónimo funciona aunque Oracle no esté configurado. Las cuentas y los
+endpoints de progreso todavía usan Oracle. Para esa conexión, copia
+`../.env.example` como `backend/.env` y completa las variables Oracle.
+
+`backend/app/schema.sql` contiene ahora el esquema PostgreSQL de Supabase
+(`usuarios` y `progreso`), con correo y un registro por partida. No debe ejecutarse
+en Oracle. Las variables `DB_*` de `.env.example` documentan la nueva conexión;
+el backend todavía no las utiliza. Queda pendiente adaptar el registro, login,
+guardado del progreso y selección de palabras para excluir las ya adivinadas.
 
 ### Frontend
 

@@ -1,32 +1,19 @@
 CREATE TABLE usuarios (
-    user_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    username VARCHAR2(50) NOT NULL UNIQUE,
-    password_hash VARCHAR2(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(254) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE progreso_diario (
-    progreso_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id NUMBER NOT NULL,
-    fecha DATE NOT NULL,
-    palabra_completada VARCHAR2(32) NOT NULL,
-    intentos NUMBER(2) NOT NULL CHECK (intentos BETWEEN 1 AND 20),
-    score NUMBER(10) DEFAULT 0 NOT NULL CHECK (score >= 0),
-    letras_completadas CLOB,
-    CONSTRAINT fk_progreso_usuario FOREIGN KEY (user_id) REFERENCES usuarios(user_id),
-    CONSTRAINT uq_progreso_usuario_fecha UNIQUE (user_id, fecha)
+CREATE TABLE progreso (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    usuario_id BIGINT NOT NULL REFERENCES usuarios(id),
+    palabra_objetivo VARCHAR(32) NOT NULL,
+    idioma VARCHAR(2) NOT NULL DEFAULT 'es',
+    estado VARCHAR(12) NOT NULL DEFAULT 'en_curso'
+        CHECK (estado IN ('en_curso', 'ganada', 'perdida', 'abandonada')),
+    intentos TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[]
+        CHECK (cardinality(intentos) <= 5),
+    creada_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
-CREATE TABLE estadisticas_letras (
-    estadistica_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id NUMBER NOT NULL,
-    palabra_id NUMBER NOT NULL,
-    letra VARCHAR2(2) NOT NULL,
-    estado NUMBER(1) NOT NULL CHECK (estado IN (0, 1, 2)),
-    fecha DATE NOT NULL,
-    CONSTRAINT fk_estadistica_usuario FOREIGN KEY (user_id) REFERENCES usuarios(user_id),
-    CONSTRAINT fk_estadistica_progreso FOREIGN KEY (palabra_id) REFERENCES progreso_diario(progreso_id)
-);
-
-CREATE INDEX idx_progreso_usuario ON progreso_diario(user_id, fecha);
-CREATE INDEX idx_estadisticas_usuario ON estadisticas_letras(user_id, letra, estado);

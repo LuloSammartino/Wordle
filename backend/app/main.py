@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from functools import lru_cache
-import logging
 import random
 import threading
 import time
@@ -14,10 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from spellchecker import SpellChecker
 
-from .database import close_db_pool, init_db_pool
+from .database import close_db_pool
 from .register import router as user_router
 
-logger = logging.getLogger(__name__)
 SUPPORTED_LANGUAGES = {"en", "es", "fr", "pt", "de", "it", "ru", "ar", "nl"}
 MAX_ATTEMPTS = 5
 GAME_TTL_SECONDS = 4 * 60 * 60
@@ -83,10 +81,6 @@ def evaluate(answer: str, attempt: str) -> list[int]:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    try:
-        init_db_pool()
-    except Exception as exc:
-        logger.warning("Oracle no disponible; el juego anónimo seguirá funcionando: %s", exc)
     yield
     close_db_pool()
 

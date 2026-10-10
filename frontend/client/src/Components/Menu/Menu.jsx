@@ -1,12 +1,17 @@
 import styles from './Menu.module.css';
 import { Link } from 'react-router';
 import flags from '../../utils/flags';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const apiBaseUrl = import.meta.env.VITE_API_URL;
 
 function Menu() {
 
 const [selectedIndex, setSelectedIndex] = useState(0);
 
+useEffect(() => {
+    fetch(`${apiBaseUrl}/ok`).catch(() => {});
+}, []);
 
 
 function handleLanguage(language) {

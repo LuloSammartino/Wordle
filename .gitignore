@@ -1,2 +1,9 @@
 .env
 dist-development/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.vscode/
+.idea/
+backend/Wallet_*/
